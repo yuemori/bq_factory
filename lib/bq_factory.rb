@@ -2,6 +2,7 @@ require 'active_support'
 require 'active_support/core_ext'
 require "bq_factory/version"
 require "bq_factory/configuration"
+require "bq_factory/table"
 
 module BqFactory
   class << self

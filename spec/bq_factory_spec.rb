@@ -10,8 +10,6 @@ describe BqFactory do
     end
   end
 
-  subject { described_class.table(table_name) }
-
   let(:table_name) { :user }
   let(:file_name)  { "stubbed_file" }
   let(:hash) do
@@ -25,6 +23,9 @@ describe BqFactory do
   end
   let(:yaml) { hash.to_yaml }
 
-  it { expect { subject }.not_to raise_error }
-  it { is_expected.to eq hash[:user] }
+  describe '#table' do
+    subject { described_class.table(table_name) }
+    it { expect { subject }.not_to raise_error }
+    it { is_expected.to eq hash[:user] }
+  end
 end
