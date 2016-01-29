@@ -17,7 +17,7 @@ module BqFactory
     end
 
     def dataset
-      bigquery.dataset
+      bigquery.dataset(config.dataset_name)
     end
 
     def config

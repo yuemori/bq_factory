@@ -27,19 +27,23 @@ describe BqFactory::Client do
   describe "settings" do
     let(:project_id)   { "project_id" }
     let(:keyfile_path) { "/path/to/keyfile.json" }
+    let(:dataset_name) { "test_dataset" }
 
     before do
       BqFactory.configure do |config|
         config.project_id = project_id
         config.keyfile_path = keyfile_path
+        config.dataset_name = dataset_name
       end
     end
 
-    subject { client.send :gcloud }
+    subject { client.send :dataset }
 
     it 'should be created to the instance of Gcloud with confugiration params' do
       expect(Gcloud).to receive(:new).with(project_id, keyfile_path).and_return(gcloud)
-      is_expected.to eq gcloud
+      expect(gcloud).to receive(:bigquery).and_return(bigquery)
+      expect(bigquery).to receive(:dataset).with(dataset_name).and_return(dataset)
+      is_expected.to eq dataset
     end
   end
 end
