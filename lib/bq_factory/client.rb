@@ -9,7 +9,7 @@ module BqFactory
     private
 
     def gcloud
-      Gcloud.new "project-id", "/path/to/keyfile.json"
+      Gcloud.new config.project_id, config.keyfile_path
     end
 
     def bigquery
@@ -18,6 +18,10 @@ module BqFactory
 
     def dataset
       bigquery.dataset
+    end
+
+    def config
+      BqFactory.configuration
     end
   end
 end

@@ -23,4 +23,23 @@ describe BqFactory::Client do
       expect { subject }.not_to raise_error
     end
   end
+
+  describe "settings" do
+    let(:project_id)   { "project_id" }
+    let(:keyfile_path) { "/path/to/keyfile.json" }
+
+    before do
+      BqFactory.configure do |config|
+        config.project_id = project_id
+        config.keyfile_path = keyfile_path
+      end
+    end
+
+    subject { client.send :gcloud }
+
+    it 'should be created to the instance of Gcloud with confugiration params' do
+      expect(Gcloud).to receive(:new).with(project_id, keyfile_path).and_return(gcloud)
+      is_expected.to eq gcloud
+    end
+  end
 end
