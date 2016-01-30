@@ -50,7 +50,11 @@ describe BqFactory do
       let(:hash)  { [alice, bob] }
       let(:alice) { { name: 'alice', age: 20 } }
       let(:bob)   { { name: 'bob', age: 21 } }
-      let(:query) { %{SELECT * FROM (SELECT "#{alice[:name]}" AS name, #{alice[:age]} AS age), (SELECT "#{bob[:name]}" AS name, #{bob[:age]} AS age)} }
+
+      let(:query) do
+        %{SELECT * FROM (SELECT "#{alice[:name]}" AS name, #{alice[:age]} AS age), } +
+          %{(SELECT "#{bob[:name]}" AS name, #{bob[:age]} AS age)}
+      end
 
       it_behaves_like "create query from hash"
     end
