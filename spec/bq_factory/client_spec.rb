@@ -50,6 +50,21 @@ describe BqFactory::Client do
     end
   end
 
+  describe "#dataset_destroy!" do
+    before do
+      allow(client).to receive(:gcloud).and_return(gcloud)
+      allow(gcloud).to receive(:bigquery).and_return(bigquery)
+      allow(bigquery).to receive(:dataset).with(dataset_name).and_return(dataset)
+    end
+
+    subject { client.dataset_destroy! }
+
+    it 'should be delegated to the instance of Gcloud' do
+      expect(dataset).to receive(:delete).with(force: true)
+      expect { subject }.not_to raise_error
+    end
+  end
+
   describe "settings" do
     subject { client.send :dataset }
 

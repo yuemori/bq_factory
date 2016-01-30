@@ -10,6 +10,10 @@ module BqFactory
       bigquery.create_dataset(config.dataset_name)
     end
 
+    def dataset_destroy!
+      dataset.delete(force: true)
+    end
+
     private
 
     def gcloud
