@@ -6,6 +6,10 @@ module BqFactory
   class Client
     delegate :create_view, to: :dataset
 
+    def dataset_create!
+      bigquery.create_dataset(config.dataset_name)
+    end
+
     private
 
     def gcloud

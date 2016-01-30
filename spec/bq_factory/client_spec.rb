@@ -9,6 +9,18 @@ describe BqFactory::Client do
   let(:table_id) { "test" }
   let(:query)    { "SELECT * FROM test" }
 
+  let(:project_id)   { "project_id" }
+  let(:keyfile_path) { "/path/to/keyfile.json" }
+  let(:dataset_name) { "test_dataset" }
+
+  before do
+    BqFactory.configure do |config|
+      config.project_id = project_id
+      config.keyfile_path = keyfile_path
+      config.dataset_name = dataset_name
+    end
+  end
+
   describe "#create_view" do
     before do
       allow(client).to receive(:gcloud).and_return(gcloud)
@@ -24,19 +36,21 @@ describe BqFactory::Client do
     end
   end
 
-  describe "settings" do
-    let(:project_id)   { "project_id" }
-    let(:keyfile_path) { "/path/to/keyfile.json" }
-    let(:dataset_name) { "test_dataset" }
-
+  describe "#dataset_create!" do
     before do
-      BqFactory.configure do |config|
-        config.project_id = project_id
-        config.keyfile_path = keyfile_path
-        config.dataset_name = dataset_name
-      end
+      allow(client).to receive(:gcloud).and_return(gcloud)
+      allow(gcloud).to receive(:bigquery).and_return(bigquery)
     end
 
+    subject { client.dataset_create! }
+
+    it 'should be delegated to the instance of Gcloud' do
+      expect(bigquery).to receive(:create_dataset).with(dataset_name)
+      expect { subject }.not_to raise_error
+    end
+  end
+
+  describe "settings" do
     subject { client.send :dataset }
 
     it 'should be created to the instance of Gcloud with confugiration params' do
