@@ -1,10 +1,10 @@
 require 'gcloud'
+require 'active_support'
+require 'active_support/core_ext'
 
 module BqFactory
   class Client
-    def create_view(table_id, query)
-      dataset.create_view(table_id, query)
-    end
+    delegate :create_view, to: :dataset
 
     private
 
