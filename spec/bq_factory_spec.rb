@@ -70,4 +70,12 @@ describe BqFactory do
       subject
     end
   end
+
+  describe '.table_by_name' do
+    subject { described_class.table_by_name(name) }
+    before  { described_class.register_table(name, table) }
+    let(:name)  { :dummy_table }
+    let(:table) { double('Table') }
+    it { is_expected.to eq table }
+  end
 end

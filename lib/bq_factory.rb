@@ -45,5 +45,9 @@ module BqFactory
     def tables
       @tables ||= TableRegistory.new
     end
+
+    def table_by_name(name)
+      tables.find(name)
+    end
   end
 end
