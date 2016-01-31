@@ -1,4 +1,5 @@
 require "bq_factory/version"
+require "bq_factory/attribute"
 require "bq_factory/client"
 require "bq_factory/configuration"
 require "bq_factory/dsl"
