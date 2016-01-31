@@ -1,9 +1,13 @@
+require "active_support"
+require "active_support/core_ext"
 require "bq_factory/version"
 require "bq_factory/attribute"
+require "bq_factory/record"
 require "bq_factory/client"
 require "bq_factory/configuration"
 require "bq_factory/dsl"
 require "bq_factory/errors"
+require "bq_factory/record"
 require "bq_factory/registory"
 require "bq_factory/table_registory"
 
