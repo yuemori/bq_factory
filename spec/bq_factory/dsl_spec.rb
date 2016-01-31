@@ -19,7 +19,7 @@ describe BqFactory::DSL do
 
     shared_examples_for 'fetch table from bigquery' do
       it 'should get expect table' do
-        expect(BqFactory).to receive(:register_table).with(table)
+        expect(BqFactory).to receive(:register_table).with(name, table)
         expect_any_instance_of(BqFactory::Client).to receive(:table).with(expect_table_name).and_return(table)
         expect { subject }.not_to raise_error
       end

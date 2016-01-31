@@ -5,7 +5,7 @@ module BqFactory
     delegate :include?, to: :items
 
     def initialize(schema, hash = {})
-      schema.each { |column| items[column[:name]] = Attribute.new(column[:name], column[:type]) }
+      schema.each { |column| items[column["name"]] = Attribute.new(column["name"], column["type"]) }
       hash.each { |key, value| send(:"#{key}=", value) }
     end
 
