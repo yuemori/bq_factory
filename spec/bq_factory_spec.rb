@@ -25,38 +25,64 @@ describe BqFactory do
   end
 
   describe '.create_view' do
+    subject { described_class.create_view(table_id, rows) }
+    let(:table_id) { :dummy_table }
+    let(:rows)     { [row, row] }
     let(:client)   { double('Client') }
-    let(:table_id) { "dummy_table" }
+    let(:row)      { { name: 'foo' } }
+    let(:query)    { %{SELECT * FROM (SELECT "foo" AS name)} }
 
-    before { allow(described_class).to receive(:client).and_return(client) }
+    it 'should be delegated to client' do
+      expect(described_class).to receive(:build_query).with(table_id, rows).and_return(query)
+      expect(described_class).to receive(:client).and_return(client)
+      expect(client).to receive(:create_view).with(table_id, query)
+      subject
+    end
+  end
 
-    subject { described_class.create_view(table_id, hash) }
+  describe '.build_query' do
+    shared_examples_for "create query from rows" do
+      subject { described_class.build_query(table_id, rows) }
 
-    shared_examples_for "create query from hash" do
-      it 'should be delegated to BqFactory::Client' do
-        expect(client).to receive(:create_view).with(table_id, query)
-        expect { subject }.not_to raise_error
+      let(:client)   { double('Client') }
+      let(:table)    { double('Table') }
+      let(:table_id) { "dummy_table" }
+
+      before do
+        allow(described_class).to receive(:client).and_return(client)
+        allow(described_class).to receive(:table).and_return(table)
+        allow(table).to receive(:schema).and_return(schema)
       end
+
+      it { is_expected.to eq query }
     end
 
-    context 'when params contains a singular of hash' do
-      let(:hash)     { { name: 'alice', age: 20 } }
-      let(:query)    { %{SELECT * FROM (SELECT "#{hash[:name]}" AS name, #{hash[:age]} AS age)} }
+    context 'when params contains a singular of rows' do
+      let(:rows)  { { name: 'alice', age: 20 } }
+      let(:schema) { [name_schema, age_schema] }
+      let(:name_schema) { { name: 'name', type: 'STRING' } }
+      let(:age_schema)  { { name: 'age', type: 'INTEGER' } }
+      let(:query) do
+        %{SELECT * FROM (SELECT "#{rows[:name]}" AS name, } +
+          %{#{rows[:age]} AS age)}
+      end
 
-      it_behaves_like "create query from hash"
+      it_behaves_like "create query from rows"
     end
 
-    context 'when params contains a plural of hash' do
-      let(:hash)  { [alice, bob] }
+    context 'when params contains a plural of rows' do
+      let(:rows)  { [alice, bob] }
       let(:alice) { { name: 'alice', age: 20 } }
       let(:bob)   { { name: 'bob', age: 21 } }
-
+      let(:schema) { [name_schema, age_schema] }
+      let(:name_schema) { { name: 'name', type: 'STRING' } }
+      let(:age_schema)  { { name: 'age', type: 'INTEGER' } }
       let(:query) do
         %{SELECT * FROM (SELECT "#{alice[:name]}" AS name, #{alice[:age]} AS age), } +
           %{(SELECT "#{bob[:name]}" AS name, #{bob[:age]} AS age)}
       end
 
-      it_behaves_like "create query from hash"
+      it_behaves_like "create query from rows"
     end
   end
 

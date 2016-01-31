@@ -22,8 +22,7 @@ module BqFactory
     end
 
     def create_view(table_id, *rows)
-      rows = Array.new(rows.flatten(1))
-      query = build_query(rows)
+      query = build_query(table_id, *rows)
       client.create_view(table_id, query)
     end
 
@@ -31,8 +30,8 @@ module BqFactory
       @client ||= BqFactory::Client.new
     end
 
-    def build_query(rows)
-      subqueries = rows.map do |row|
+    def build_query(table_id, *rows)
+      subqueries = rows.flatten.map do |row|
         %{(SELECT "#{row[:name]}" AS name, #{row[:age]} AS age)}
       end
       %{SELECT * FROM #{subqueries.join(', ')}}
