@@ -1,5 +1,7 @@
 module BqFactory
   class TableRegistory
+    delegate :find, to: :registory
+
     def register(name, table)
       name = name.to_sym
 

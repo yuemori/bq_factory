@@ -18,4 +18,13 @@ describe BqFactory::TableRegistory do
       it { expect { subject }.to raise_error BqFactory::DuplicateDefinitionError }
     end
   end
+
+  describe '#find' do
+    subject { table_registory.find(name) }
+    before  { table_registory.register(name, table) }
+    let(:table) { double('Table') }
+    let(:name)  { :dummy_table }
+
+    it { is_expected.to eq table }
+  end
 end
