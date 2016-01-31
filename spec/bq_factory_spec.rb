@@ -61,11 +61,12 @@ describe BqFactory do
   end
 
   describe '.register_table' do
-    subject { described_class.register_table(table) }
+    subject { described_class.register_table(name, table) }
     let(:table) { double('Table') }
+    let(:name)  { :dummy_table }
 
     it 'should be delegated to the instance of TableRegistory' do
-      expect_any_instance_of(BqFactory::TableRegistory).to receive(:register).with(table)
+      expect_any_instance_of(BqFactory::TableRegistory).to receive(:register).with(name, table)
       subject
     end
   end

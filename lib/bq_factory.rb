@@ -3,6 +3,7 @@ require "bq_factory/client"
 require "bq_factory/configuration"
 require "bq_factory/dsl"
 require "bq_factory/errors"
+require "bq_factory/registory"
 require "bq_factory/table_registory"
 
 module BqFactory
@@ -36,8 +37,8 @@ module BqFactory
     %{SELECT * FROM #{subqueries.join(', ')}}
   end
 
-  def self.register_table(table)
-    tables.register(table)
+  def self.register_table(name, table)
+    tables.register(name.to_sym, table)
   end
 
   def self.tables
