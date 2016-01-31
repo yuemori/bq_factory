@@ -50,11 +50,19 @@ describe BqFactory do
 
       before do
         allow(described_class).to receive(:client).and_return(client)
-        allow(described_class).to receive(:table).and_return(table)
+        allow(described_class).to receive(:table_by_name).and_return(table)
         allow(table).to receive(:schema).and_return(schema)
       end
 
       it { is_expected.to eq query }
+    end
+
+    context 'when alternative params' do
+      let(:rows)   { { foo: 'bar' } }
+      let(:query)  { %{SELECT * FROM (SELECT "#{rows[:foo]}" AS foo)} }
+      let(:schema) { [{ name: 'foo', type: 'STRING' }] }
+
+      it_behaves_like "create query from rows"
     end
 
     context 'when params contains a singular of rows' do

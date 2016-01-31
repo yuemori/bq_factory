@@ -31,10 +31,40 @@ module BqFactory
     end
 
     def build_query(table_id, *rows)
-      subqueries = rows.flatten.map do |row|
-        %{(SELECT "#{row[:name]}" AS name, #{row[:age]} AS age)}
-      end
+      schema = table_by_name(table_id).schema
+      records = rows.flatten.map { |row| create_record(row, schema) }
+      subqueries = records.map { |record| build_subquery(record) }
       %{SELECT * FROM #{subqueries.join(', ')}}
+    end
+
+    def build_subquery(record)
+      "(SELECT #{record.map { |row| "#{cast_to_sql(row[:type], row[:value])} AS #{row[:name]}" }.join(', ')})"
+    end
+
+    def create_record(row, schema)
+      schema.map do |column|
+        name = column[:name].to_sym
+        type = column[:type]
+        value = row[name]
+        { name: name, type: type, value: value }
+      end
+    end
+
+    def cast_to_sql(type, value)
+      case type
+      when "STRING"
+        %{"#{value.try(:gsub, /"/, %{\"})}"}
+      when "INTEGER", "FLOAT"
+        value.to_s
+      when "TIMESTAMP"
+        "TIMESTAMP(\"#{value.try(:to_s, :db)}\")"
+      when nil
+        "CAST(NULL AS #{type})"
+      when "RECORD"
+        raise NotImplementedError
+      else
+        raise ArgumentError, "#{record[:type]} is unsupported type"
+      end
     end
 
     def register_table(name, table)
