@@ -2,6 +2,7 @@ require "bq_factory/version"
 require "bq_factory/client"
 require "bq_factory/configuration"
 require "bq_factory/dsl"
+require "bq_factory/errors"
 require "bq_factory/table_registory"
 
 module BqFactory
