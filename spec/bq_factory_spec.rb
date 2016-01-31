@@ -59,4 +59,14 @@ describe BqFactory do
       it_behaves_like "create query from hash"
     end
   end
+
+  describe '.register_table' do
+    subject { described_class.register_table(table) }
+    let(:table) { double('Table') }
+
+    it 'should be delegated to the instance of TableRegistory' do
+      expect_any_instance_of(BqFactory::TableRegistory).to receive(:register).with(table)
+      subject
+    end
+  end
 end

@@ -2,6 +2,7 @@ require "bq_factory/version"
 require "bq_factory/client"
 require "bq_factory/configuration"
 require "bq_factory/dsl"
+require "bq_factory/table_registory"
 
 module BqFactory
   def self.configure
@@ -32,5 +33,13 @@ module BqFactory
       %{(SELECT "#{row[:name]}" AS name, #{row[:age]} AS age)}
     end
     %{SELECT * FROM #{subqueries.join(', ')}}
+  end
+
+  def self.register_table(table)
+    tables.register(table)
+  end
+
+  def self.tables
+    @tables ||= TableRegistory.new
   end
 end
