@@ -7,6 +7,7 @@ require "bq_factory/client"
 require "bq_factory/configuration"
 require "bq_factory/dsl"
 require "bq_factory/errors"
+require "bq_factory/query_builder"
 require "bq_factory/record"
 require "bq_factory/registory"
 require "bq_factory/table_registory"
@@ -37,39 +38,8 @@ module BqFactory
 
     def build_query(table_id, *rows)
       schema = table_by_name(table_id).schema
-      records = rows.flatten.map { |row| create_record(row, schema) }
-      subqueries = records.map { |record| build_subquery(record) }
-      %{SELECT * FROM #{subqueries.join(', ')}}
-    end
-
-    def build_subquery(record)
-      "(SELECT #{record.map { |row| "#{cast_to_sql(row[:type], row[:value])} AS #{row[:name]}" }.join(', ')})"
-    end
-
-    def create_record(row, schema)
-      schema.map do |column|
-        name = column[:name].to_sym
-        type = column[:type]
-        value = row[name]
-        { name: name, type: type, value: value }
-      end
-    end
-
-    def cast_to_sql(type, value)
-      case type
-      when "STRING"
-        %{"#{value.try(:gsub, /"/, %{\"})}"}
-      when "INTEGER", "FLOAT"
-        value.to_s
-      when "TIMESTAMP"
-        "TIMESTAMP(\"#{value.try(:to_s, :db)}\")"
-      when nil
-        "CAST(NULL AS #{type})"
-      when "RECORD"
-        raise NotImplementedError
-      else
-        raise ArgumentError, "#{record[:type]} is unsupported type"
-      end
+      records = rows.flatten.map { |row| Record.new(schema, row) }
+      QueryBuilder.new(records).build
     end
 
     def register_table(name, table)
