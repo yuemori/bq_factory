@@ -14,6 +14,8 @@ require "bq_factory/table_registory"
 
 module BqFactory
   class << self
+    delegate :create_dataset!, :delete_dataset!, :table_from_bigquery, to: :client
+
     def configure
       yield configuration if block_given?
       configuration
@@ -24,7 +26,7 @@ module BqFactory
     end
 
     def define(&block)
-      DSL.run(block)
+      DSL.run(&block)
     end
 
     def create_view(table_id, *rows)
@@ -37,7 +39,7 @@ module BqFactory
     end
 
     def build_query(table_id, *rows)
-      schema = table_by_name(table_id).schema
+      schema = table_by_name(table_id).schema["fields"]
       records = rows.flatten.map { |row| Record.new(schema, row) }
       QueryBuilder.new(records).build
     end

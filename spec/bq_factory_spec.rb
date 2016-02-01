@@ -11,19 +11,6 @@ describe BqFactory do
     it { is_expected.to be_instance_of BqFactory::Configuration }
   end
 
-  describe '.define' do
-    let(:table_name) { "dummy_table" }
-    let(:table_id)   { "dummy_table2016" }
-    let(:block)      { -> {} }
-
-    subject { described_class.define(&block) }
-
-    it 'should be delegated to the DSL' do
-      expect(BqFactory::DSL).to receive(:run).with(block)
-      expect { subject }.not_to raise_error
-    end
-  end
-
   describe '.create_view' do
     subject { described_class.create_view(table_id, rows) }
     let(:table_id) { :dummy_table }
@@ -111,5 +98,48 @@ describe BqFactory do
     let(:name)  { :dummy_table }
     let(:table) { double('Table') }
     it { is_expected.to eq table }
+  end
+
+  describe 'integration test' do
+    before do
+      BqFactory.configure do |config|
+        config.project_id   = "bq-factory"
+        config.reference_dataset = "production"
+        config.keyfile_path = File.expand_path "../../keys/bq-factory.json", __FILE__
+        config.dataset_name = "test_dataset"
+      end
+
+      # client = Gcloud.new("bq-factory", File.expand_path("../../keys/bq-factory.json", __FILE__)).bigquery
+      # client.create_dataset 'production'
+      # client.dataset('production').create_table('user20160101', schema: { fields: schema })
+
+      BqFactory.create_dataset!
+
+      BqFactory.define do
+        factory :user, reference: "user20160101"
+      end
+    end
+
+    let(:hash) { { name: "alice", age: 20, date: Time.parse('2016-01-01 00:00:00'), height: 167.1, weight: nil, admin: false } }
+    let(:schema) { [string_schema, integer_schema, timestamp_schema, float_schema, null_schema, boolean_schema] }
+    let(:string_schema)    { { name: "name", type: "STRING" } }
+    let(:integer_schema)   { { name: "age", type: "INTEGER" } }
+    let(:timestamp_schema) { { name: "date", type: "TIMESTAMP" } }
+    let(:float_schema)     { { name: "height", type: "FLOAT" } }
+    let(:null_schema)      { { name: "weight", type: "FLOAT" } }
+    let(:boolean_schema)   { { name: "admin", type: "BOOLEAN" } }
+    let(:query)  { %{SELECT * FROM (SELECT "#{hash[:name]}" AS name, #{hash[:age]} AS age, TIMESTAMP("#{hash[:date].strftime('%Y-%m-%d %X')}") AS date, #{hash[:height]} AS height, CAST(NULL AS FLOAT) AS weight, #{hash[:admin]} AS admin)} }
+
+    describe 'create_view' do
+      subject { BqFactory.create_view :user, hash }
+      it { expect { subject }.not_to raise_error }
+    end
+
+    describe 'build_query' do
+      subject { BqFactory.build_query :user, hash }
+      it { is_expected.to eq query }
+    end
+
+    after { BqFactory.delete_dataset! }
   end
 end

@@ -6,8 +6,8 @@ module BqFactory
 
     def factory(name, options = {})
       table_name = options.key?(:reference) ? options[:reference] : name
-      table = BqFactory.client.table(table_name)
-      BqFactory.register_table(table)
+      table = BqFactory.table_from_bigquery(table_name)
+      BqFactory.register_table(name, table)
     end
   end
 end

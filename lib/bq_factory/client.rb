@@ -4,14 +4,18 @@ require 'active_support/core_ext'
 
 module BqFactory
   class Client
-    delegate :create_view, to: :dataset
+    delegate :create_view, :table, to: :dataset
 
-    def dataset_create!
+    def create_dataset!
       bigquery.create_dataset(config.dataset_name)
     end
 
-    def dataset_destroy!
+    def delete_dataset!
       dataset.delete(force: true)
+    end
+
+    def table_from_bigquery(table_name)
+      dataset(config.reference_dataset).table(table_name)
     end
 
     private
@@ -24,8 +28,9 @@ module BqFactory
       gcloud.bigquery
     end
 
-    def dataset
-      bigquery.dataset(config.dataset_name)
+    def dataset(name = nil)
+      name = config.dataset_name if name.nil?
+      bigquery.dataset(name)
     end
 
     def config
