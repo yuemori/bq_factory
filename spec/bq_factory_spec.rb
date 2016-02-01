@@ -27,9 +27,8 @@ describe BqFactory do
   describe '.create_view' do
     subject { described_class.create_view(table_id, rows) }
     let(:table_id) { :dummy_table }
-    let(:rows)     { [row, row] }
+    let(:rows)     { { name: 'foo' } }
     let(:client)   { double('Client') }
-    let(:row)      { { name: 'foo' } }
     let(:query)    { %{SELECT * FROM (SELECT "foo" AS name)} }
 
     it 'should be delegated to client' do
@@ -41,75 +40,33 @@ describe BqFactory do
   end
 
   describe '.build_query' do
-    shared_examples_for "create query from rows" do
-      subject { described_class.build_query(table_id, rows) }
+    subject { described_class.build_query(table_id, hash) }
+    let(:table_id) { :dummy_table }
+    let(:hash)     { [{ name: 'alice' }, { name: 'bob' }] }
+    let(:schema)   { [{ name: 'name', type: 'STRING' }] }
 
-      let(:client)   { double('Client') }
-      let(:table)    { double('Table') }
-      let(:table_id) { "dummy_table" }
+    before { allow(described_class).to receive(:schema_by_name).with(table_id).and_return(schema) }
 
-      before do
-        allow(described_class).to receive(:client).and_return(client)
-        allow(described_class).to receive(:table_by_name).and_return(table)
-        allow(table).to receive(:schema).and_return(schema)
-      end
-
+    context 'when not array of hash given' do
+      let(:hash)  { { name: 'alice' } }
+      let(:query) { %{SELECT * FROM (SELECT "alice" AS name)} }
       it { is_expected.to eq query }
     end
 
-    context 'when alternative params' do
-      let(:rows)   { { foo: 'bar' } }
-      let(:query)  { %{SELECT * FROM (SELECT "#{rows[:foo]}" AS foo)} }
-      let(:schema) { [{ name: 'foo', type: 'STRING' }] }
-
-      it_behaves_like "create query from rows"
-    end
-
-    context 'when params contains a singular of rows' do
-      let(:rows)  { { name: 'alice', age: 20 } }
-      let(:schema) { [name_schema, age_schema] }
-      let(:name_schema) { { name: 'name', type: 'STRING' } }
-      let(:age_schema)  { { name: 'age', type: 'INTEGER' } }
-      let(:query) do
-        %{SELECT * FROM (SELECT "#{rows[:name]}" AS name, } +
-          %{#{rows[:age]} AS age)}
-      end
-
-      it_behaves_like "create query from rows"
-    end
-
-    context 'when params contains a plural of rows' do
-      let(:rows)  { [alice, bob] }
-      let(:alice) { { name: 'alice', age: 20 } }
-      let(:bob)   { { name: 'bob', age: 21 } }
-      let(:schema) { [name_schema, age_schema] }
-      let(:name_schema) { { name: 'name', type: 'STRING' } }
-      let(:age_schema)  { { name: 'age', type: 'INTEGER' } }
-      let(:query) do
-        %{SELECT * FROM (SELECT "#{alice[:name]}" AS name, #{alice[:age]} AS age), } +
-          %{(SELECT "#{bob[:name]}" AS name, #{bob[:age]} AS age)}
-      end
-
-      it_behaves_like "create query from rows"
+    context 'when array of hash given' do
+      let(:hash)  { [{ name: 'alice' }, { name: 'bob' }] }
+      let(:query) { %{SELECT * FROM (SELECT "alice" AS name), (SELECT "bob" AS name)} }
+      it { is_expected.to eq query }
     end
   end
 
-  describe '.register_table' do
-    subject { described_class.register_table(name, table) }
-    let(:table) { double('Table') }
-    let(:name)  { :dummy_table }
+  describe '.schema_by_name' do
+    subject { described_class.schema_by_name(name) }
+    before  { described_class.register(name, schema) }
 
-    it 'should be delegated to the instance of TableRegistory' do
-      expect_any_instance_of(BqFactory::TableRegistory).to receive(:register).with(name, table)
-      subject
-    end
-  end
+    let(:name)   { :dummy }
+    let(:schema) { double('Schema') }
 
-  describe '.table_by_name' do
-    subject { described_class.table_by_name(name) }
-    before  { described_class.register_table(name, table) }
-    let(:name)  { :dummy_table }
-    let(:table) { double('Table') }
-    it { is_expected.to eq table }
+    it { is_expected.to eq schema }
   end
 end

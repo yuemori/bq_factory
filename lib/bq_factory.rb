@@ -14,6 +14,10 @@ require "bq_factory/table_registory"
 
 module BqFactory
   class << self
+    delegate :client, :default_dataset, :project_id, :keyfile_path, :schemas, to: :configuration
+    delegate :fetch_schema, to: :client
+    delegate :register, to: :schemas
+
     def configure
       yield configuration if block_given?
       configuration
@@ -27,31 +31,20 @@ module BqFactory
       DSL.run(block)
     end
 
-    def create_view(table_id, *rows)
-      query = build_query(table_id, *rows)
+    def create_view(table_id, rows)
+      query = build_query(table_id, rows)
       client.create_view(table_id, query)
     end
 
-    def client
-      @client ||= BqFactory::Client.new
-    end
-
-    def build_query(table_id, *rows)
-      schema = table_by_name(table_id).schema
+    def build_query(table_id, rows)
+      rows = [rows] unless rows.instance_of? Array
+      schema = schema_by_name(table_id)
       records = rows.flatten.map { |row| Record.new(schema, row) }
       QueryBuilder.new(records).build
     end
 
-    def register_table(name, table)
-      tables.register(name.to_sym, table)
-    end
-
-    def tables
-      @tables ||= TableRegistory.new
-    end
-
-    def table_by_name(name)
-      tables.find(name)
+    def schema_by_name(name)
+      schemas.find(name)
     end
   end
 end
