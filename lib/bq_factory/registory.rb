@@ -2,6 +2,8 @@ module BqFactory
   class Registory
     include Enumerable
 
+    attr_reader :name
+
     def initialize(name)
       @name = name
     end

@@ -1,12 +1,18 @@
 module BqFactory
-  class TableRegistory
+  class RegistoryDecorator
     delegate :find, to: :registory
+
+    attr_reader :registory
+
+    def initialize(registory)
+      @registory = registory
+    end
 
     def register(name, table)
       name = name.to_sym
 
       if registered?(name)
-        raise DuplicateDefinitionError.new, "Factory already registered: #{name}"
+        raise DuplicateDefinitionError.new, "#{registory.name} already registered: #{name}"
       else
         registory.register(name, table)
       end
@@ -14,10 +20,6 @@ module BqFactory
 
     def registered?(name)
       registory.registered? name
-    end
-
-    def registory
-      @registory ||= Registory.new('Table')
     end
   end
 end

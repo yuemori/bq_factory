@@ -3,7 +3,7 @@ module BqFactory
     attr_accessor :project_id, :keyfile_path, :default_dataset
 
     def schemas
-      @schema_registory ||= Registory.new('schema')
+      @schemas ||= RegistoryDecorator.new(Registory.new('schema'))
     end
 
     def client

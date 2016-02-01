@@ -10,7 +10,7 @@ require "bq_factory/errors"
 require "bq_factory/query_builder"
 require "bq_factory/record"
 require "bq_factory/registory"
-require "bq_factory/table_registory"
+require "bq_factory/registory_decorator"
 
 module BqFactory
   class << self
