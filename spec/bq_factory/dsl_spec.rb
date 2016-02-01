@@ -11,11 +11,11 @@ describe BqFactory::DSL do
   end
 
   describe '#factory' do
-    subject { described_class.new.factory(table_name, options) }
+    subject { described_class.new.factory(name, options) }
 
-    let(:schema)     { double('Schema') }
-    let(:options)    { Hash.new }
-    let(:table_name) { :dummy_table }
+    let(:schema)  { double('Schema') }
+    let(:options) { Hash.new }
+    let(:name)    { :dummy }
 
     shared_examples_for 'fetch table from bigquery' do
       before { allow(BqFactory).to receive(:default_dataset).and_return(default_dataset) }
@@ -23,13 +23,13 @@ describe BqFactory::DSL do
 
       it 'should get expect table' do
         expect(BqFactory).to receive(:fetch_schema).with(expect_dataset, expect_table).and_return(schema)
-        expect(BqFactory).to receive(:register_schema).with(schema)
+        expect(BqFactory).to receive(:register).with(name, schema)
         subject
       end
     end
 
     context 'when not specify table name' do
-      let(:expect_table)   { table_name }
+      let(:expect_table)   { name }
       let(:expect_dataset) { default_dataset }
 
       it_behaves_like 'fetch table from bigquery'
