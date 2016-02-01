@@ -5,9 +5,10 @@ module BqFactory
     end
 
     def factory(name, options = {})
-      table_name = options.key?(:reference) ? options[:reference] : name
-      table = BqFactory.client.table(table_name)
-      BqFactory.register_table(table)
+      dataset_name = options.key?(:dataset) ? options[:dataset] : BqFactory.default_dataset
+      table_name = options.key?(:table) ? options[:table] : name
+      schema = BqFactory.fetch_schema(dataset_name, table_name)
+      BqFactory.register_schema(schema)
     end
   end
 end

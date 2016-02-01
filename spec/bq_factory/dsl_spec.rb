@@ -11,29 +11,35 @@ describe BqFactory::DSL do
   end
 
   describe '#factory' do
-    subject { described_class.new.factory(name, options) }
+    subject { described_class.new.factory(table_name, options) }
 
-    let(:table)   { double('Table') }
-    let(:name)    { :dummy_table }
-    let(:options) { Hash.new }
+    let(:schema)     { double('Schema') }
+    let(:options)    { Hash.new }
+    let(:table_name) { :dummy_table }
 
     shared_examples_for 'fetch table from bigquery' do
+      before { allow(BqFactory).to receive(:default_dataset).and_return(default_dataset) }
+      let(:default_dataset) { :default_dataset }
+
       it 'should get expect table' do
-        expect(BqFactory).to receive(:register_table).with(table)
-        expect_any_instance_of(BqFactory::Client).to receive(:table).with(expect_table_name).and_return(table)
-        expect { subject }.not_to raise_error
+        expect(BqFactory).to receive(:fetch_schema).with(expect_dataset, expect_table).and_return(schema)
+        expect(BqFactory).to receive(:register_schema).with(schema)
+        subject
       end
     end
 
     context 'when not specify table name' do
-      let(:expect_table_name) { name }
+      let(:expect_table)   { table_name }
+      let(:expect_dataset) { default_dataset }
 
       it_behaves_like 'fetch table from bigquery'
     end
 
     context 'when specify table name in options' do
-      let(:expect_table_name) { options[:reference] }
-      let(:options) { { reference: :reference_table } }
+      let(:options) { { table: :expect_table, dataset: :expect_dataset } }
+
+      let(:expect_table)   { options[:table] }
+      let(:expect_dataset) { options[:dataset] }
 
       it_behaves_like 'fetch table from bigquery'
     end
