@@ -6,10 +6,10 @@ describe BqFactory::Record do
   describe '#respond_to?' do
     subject { instance.respond_to?(method_name) }
     let(:schema) { [column] }
-    let(:column) { { name: "age", type: "INTEGER" } }
+    let(:column) { { 'name' => "age", 'type' => "INTEGER" } }
 
     context 'when method_name in schema names' do
-      let(:method_name) { column[:name] }
+      let(:method_name) { column['name'] }
 
       it { is_expected.to be_truthy }
     end
@@ -21,7 +21,7 @@ describe BqFactory::Record do
     end
 
     context 'when method_name include "=" and not in schema names' do
-      let(:method_name) { "#{column[:name]}=" }
+      let(:method_name) { "#{column['name']}=" }
 
       it { is_expected.to be_truthy }
     end
@@ -35,9 +35,9 @@ describe BqFactory::Record do
 
   describe '#method_missing' do
     before { instance.send(:"#{name}=", value) }
-    let(:schema) { [{ name: "name", type: "STRING" }] }
-    let(:name)  { "name" }
-    let(:value) { "foo" }
+    let(:schema) { [{ 'name' => 'name', 'type' => "STRING" }] }
+    let(:name)   { 'name' }
+    let(:value)  { "foo" }
     subject { instance.send(:"#{name}") }
 
     it { is_expected.to eq value }
@@ -45,8 +45,8 @@ describe BqFactory::Record do
 
   describe '#find' do
     subject { instance.find(name) }
-    let(:schema) { [{ name: "name", type: "STRING" }] }
-    let(:name)   { "name" }
+    let(:schema) { [{ 'name' => 'name', 'type' => "STRING" }] }
+    let(:name)   { 'name' }
     let(:value)  { "foo" }
     before { instance.send(:"#{name}=", value) }
     it { is_expected.to eq value }
@@ -55,10 +55,10 @@ describe BqFactory::Record do
   describe '#to_sql' do
     subject { instance.to_sql }
 
-    let(:string_column)  { { name: "name", type: "STRING" } }
-    let(:integer_column) { { name: "age", type: "INTEGER" } }
+    let(:string_column)  { { 'name' => 'name', 'type' => "STRING" } }
+    let(:integer_column) { { 'name' => "age", 'type' => "INTEGER" } }
 
-    let(:string_column_name) { "name" }
+    let(:string_column_name) { 'name' }
     let(:integer_column_name) { "age" }
 
     let(:string)  { "foo" }
@@ -66,7 +66,7 @@ describe BqFactory::Record do
 
     context 'when plural column schema given' do
       let(:schema) { [string_column] }
-      let(:query) { %(SELECT "#{string}" AS #{string_column[:name]}) }
+      let(:query) { %(SELECT "#{string}" AS #{string_column['name']}) }
 
       before { instance.send(:"#{string_column_name}=", string) }
 
@@ -75,7 +75,7 @@ describe BqFactory::Record do
 
     context 'when plural column schema given' do
       let(:schema) { [string_column, integer_column] }
-      let(:query) { %{SELECT "#{string}" AS #{string_column[:name]}, #{integer} AS #{integer_column[:name]}} }
+      let(:query) { %{SELECT "#{string}" AS #{string_column['name']}, #{integer} AS #{integer_column['name']}} }
 
       before do
         instance.send(:"#{string_column_name}=", string)
@@ -87,7 +87,7 @@ describe BqFactory::Record do
 
     context 'when null value include' do
       let(:schema) { [string_column] }
-      let(:query) { %(SELECT CAST(NULL AS STRING) AS #{string_column[:name]}) }
+      let(:query) { %(SELECT CAST(NULL AS STRING) AS #{string_column['name']}) }
 
       it { is_expected.to eq query }
     end
