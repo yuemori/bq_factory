@@ -14,9 +14,7 @@ require "bq_factory/registory_decorator"
 
 module BqFactory
   class << self
-    delegate :client, :default_dataset, :project_id, :keyfile_path, :schemas, to: :configuration
-    delegate :fetch_schema, to: :client
-    delegate :register, to: :schemas
+    delegate :client, :project_id, :keyfile_path, :schemas, to: :configuration
 
     def configure
       yield configuration if block_given?
@@ -45,6 +43,14 @@ module BqFactory
 
     def schema_by_name(name)
       schemas.find(name)
+    end
+
+    def fetch_schema(dataset_name, table_name)
+      client.fetch_schema(dataset_name, table_name)
+    end
+
+    def register(name, schema)
+      schemas.register(name, schema)
     end
   end
 end

@@ -1,6 +1,14 @@
 require 'spec_helper'
 
 describe BqFactory do
+  describe 'delegation' do
+    describe 'to configuration' do
+      %i(client project_id keyfile_path schemas).each do |method|
+        it { is_expected.to delegate_method(method).to(:configuration) }
+      end
+    end
+  end
+
   describe '.configuration' do
     subject { described_class.configuration }
     it { is_expected.to be_instance_of BqFactory::Configuration }
