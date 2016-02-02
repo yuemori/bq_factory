@@ -53,7 +53,7 @@ describe BqFactory::Client do
       allow(bigquery).to receive(:dataset).with(dataset_name).and_return(dataset)
     end
 
-    subject { client.dataset_destroy! }
+    subject { client.dataset_destroy!(dataset_name) }
 
     it 'should be delegated to the instance of Gcloud' do
       expect(dataset).to receive(:delete).with(force: true)

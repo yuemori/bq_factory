@@ -8,8 +8,8 @@ module BqFactory
       bigquery.create_dataset(dataset_name)
     end
 
-    def dataset_destroy!
-      dataset.delete(force: true)
+    def dataset_destroy!(dataset_name)
+      dataset(dataset_name).delete(force: true)
     end
 
     def fetch_schema(dataset_name, table_name)
