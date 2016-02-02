@@ -11,3 +11,4 @@
 /Gemfile.local.lock
 /Guardfile
 /keys
+/.env
