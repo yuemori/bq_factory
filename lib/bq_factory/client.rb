@@ -3,7 +3,6 @@ require 'gcloud'
 module BqFactory
   class Client
     delegate :create_view, to: :dataset
-    delegate :dataset, to: :bigquery
     delegate :bigquery, to: :gcloud
 
     def initialize(project_id, keyfile_path)
@@ -25,5 +24,18 @@ module BqFactory
     private
 
     attr_reader :gcloud
+
+    def table(dataset_name, table_id)
+      dataset = bigquery.dataset(dataset_name)
+      table = dataset.table(table_id)
+      raise ArgumentError.new, "table not found: #{table_id}" if table.nil?
+      table
+    end
+
+    def dataset(name)
+      dataset = bigquery.dataset(name)
+      raise ArgumentError.new, "dataset not found: #{name}" if dataset.nil?
+      dataset
+    end
   end
 end

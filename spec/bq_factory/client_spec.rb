@@ -13,8 +13,52 @@ describe BqFactory::Client do
     subject { instance }
 
     it { is_expected.to delegate_method(:bigquery).to(:gcloud) }
-    it { is_expected.to delegate_method(:dataset).to(:bigquery) }
-    it { is_expected.to delegate_method(:create_view).to(:dataset) }
+  end
+
+  describe '#dataset' do
+    subject { instance.send(:dataset, dataset_name) }
+    let(:dataset_name) { :dummy_dataset }
+
+    before { allow(instance).to receive(:bigquery).and_return(bigquery) }
+
+    context 'when dataset found' do
+      it 'should be raise error' do
+        expect(bigquery).to receive(:dataset).with(dataset_name).and_return(dataset)
+        expect { subject }.not_to raise_error
+      end
+    end
+
+    context 'when dataset not found' do
+      it 'should be raise error' do
+        expect(bigquery).to receive(:dataset).with(dataset_name).and_return(nil)
+        expect { subject }.to raise_error ArgumentError
+      end
+    end
+  end
+
+  describe '#table' do
+    subject { instance.send(:table, dataset_name, table_name) }
+    let(:dataset_name) { :dummy_dataset  }
+    let(:table_name)   { :dummy_table    }
+    let(:table)        { double('Table') }
+
+    before { allow(instance).to receive(:bigquery).and_return(bigquery) }
+
+    context 'when dataset found' do
+      it 'should be raise error' do
+        expect(bigquery).to receive(:dataset).with(dataset_name).and_return(dataset)
+        expect(dataset).to receive(:table).with(table_name).and_return(table)
+        expect { subject }.not_to raise_error
+      end
+    end
+
+    context 'when dataset not found' do
+      it 'should be raise error' do
+        expect(bigquery).to receive(:dataset).with(dataset_name).and_return(dataset)
+        expect(dataset).to receive(:table).with(table_name).and_return(nil)
+        expect { subject }.to raise_error ArgumentError
+      end
+    end
   end
 
   describe "#create_view" do
