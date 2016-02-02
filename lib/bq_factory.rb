@@ -29,44 +29,44 @@ module BqFactory
       DSL.run(block)
     end
 
-    def create_view(table_id, rows)
-      query = build_query(table_id, rows)
-      client.create_view(table_id, query)
+    def create_view(factory_name, rows)
+      query = build_query(factory_name, rows)
+      client.create_view(factory_name, query)
     end
 
-    def build_query(table_id, rows)
+    def build_query(factory_name, rows)
       rows = [rows] unless rows.instance_of? Array
-      schema = schema_by_name(table_id)
+      schema = schema_by_name(factory_name)
       records = rows.flatten.map { |row| Record.new(schema, row) }
       QueryBuilder.new(records).build
     end
 
-    def schema_by_name(name)
-      schemas.find(name)
+    def schema_by_name(factory_name)
+      schemas.find(factory_name)
     end
 
     def create_dataset!(dataset_name)
       client.create_dataset!(dataset_name)
     end
 
-    def create_table!(dataset_name, table_id, schema)
-      client.create_table!(dataset_name, table_id, schema)
+    def create_table!(dataset_name, table_name, schema)
+      client.create_table!(dataset_name, table_name, schema)
     end
 
     def delete_dataset!(dataset_name)
       client.delete_dataset!(dataset_name)
     end
 
-    def delete_table!(dataset_name, table_id)
-      client.delete_table!(dataset_name, table_id)
+    def delete_table!(dataset_name, table_name)
+      client.delete_table!(dataset_name, table_name)
     end
 
     def fetch_schema_from_bigquery(dataset_name, table_name)
       client.fetch_schema(dataset_name, table_name)
     end
 
-    def register(name, schema)
-      schemas.register(name, schema)
+    def register(factory_name, schema)
+      schemas.register(factory_name, schema)
     end
   end
 end
