@@ -10,11 +10,11 @@ module BqFactory
       @gcloud = Gcloud.new project_id, keyfile_path
     end
 
-    def dataset_create!(dataset_name)
+    def create_dataset!(dataset_name)
       bigquery.create_dataset(dataset_name)
     end
 
-    def dataset_destroy!(dataset_name)
+    def delete_dataset!(dataset_name)
       dataset(dataset_name).delete(force: true)
     end
 

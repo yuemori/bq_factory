@@ -34,12 +34,12 @@ describe BqFactory::Client do
     end
   end
 
-  describe "#dataset_create!" do
+  describe "#create_dataset!" do
     before do
       allow(instance).to receive(:bigquery).and_return(bigquery)
     end
 
-    subject { instance.dataset_create!(dataset_name) }
+    subject { instance.create_dataset!(dataset_name) }
 
     it 'should be delegated to the instance of Gcloud' do
       expect(bigquery).to receive(:create_dataset).with(dataset_name)
@@ -47,13 +47,13 @@ describe BqFactory::Client do
     end
   end
 
-  describe "#dataset_destroy!" do
+  describe "#delete_dataset!" do
     before do
       allow(instance).to receive(:bigquery).and_return(bigquery)
       allow(bigquery).to receive(:dataset).with(dataset_name).and_return(dataset)
     end
 
-    subject { instance.dataset_destroy!(dataset_name) }
+    subject { instance.delete_dataset!(dataset_name) }
 
     it 'should be delegated to the instance of Gcloud' do
       expect(dataset).to receive(:delete).with(force: true)
