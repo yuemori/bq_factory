@@ -78,4 +78,46 @@ describe BqFactory do
 
     it { is_expected.to eq schema }
   end
+
+  if ENV['PROJECT_ID'] && ENV['KEYFILE_PATH']
+    describe 'integration test' do
+      let!(:existing_dataset) { "existing_dataset" }
+      let!(:view_dataset) { "view_dataset" }
+      let!(:table_name) { "test_table" }
+      let!(:schema) { [column1, column2, column3, column4, column5] }
+
+      let!(:column1) { { name: "time", type: "TIMESTAMP" } }
+      let!(:column2) { { name: "string", type: "STRING" } }
+      let!(:column3) { { name: "integer", type: "INTEGER" } }
+      let!(:column4) { { name: "float", type: "FLOAT" } }
+      let!(:column5) { { name: "boolean", type: "BOOLEAN" } }
+
+      let!(:rows) { [row1, row2, row3, row4, row5].inject({}) { |hash, row| hash.merge row  } }
+      let!(:row1) { { column1[:name] => Time.now.getutc } }
+      let!(:row2) { { column2[:name] => "test" } }
+      let!(:row3) { { column3[:name] => 1 } }
+      let!(:row4) { { column4[:name] => 0.1 } }
+      let!(:row5) { { column5[:name] => true } }
+
+      before do
+        BqFactory.create_dataset!(existing_dataset)
+        BqFactory.create_table!(existing_dataset, table_name, schema)
+        BqFactory.create_dataset!(view_dataset)
+
+        BqFactory.define do
+          factory "test_table", dataset: "existing_dataset"
+        end
+      end
+
+      describe '.create_view' do
+        subject { described_class.create_view view_dataset, table_name, rows }
+        it { expect { subject }.not_to raise_error }
+      end
+
+      after do
+        BqFactory.delete_dataset!(existing_dataset)
+        BqFactory.delete_dataset!(view_dataset)
+      end
+    end
+  end
 end
