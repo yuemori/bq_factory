@@ -19,7 +19,7 @@ module BqFactory
     end
 
     def registered?(name)
-      registory.registered? name
+      registory.registered? name.to_sym
     end
   end
 end
