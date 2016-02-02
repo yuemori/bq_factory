@@ -10,8 +10,6 @@ describe BqFactory::Client do
   let(:project_id)   { "project_id" }
   let(:keyfile_path) { "/path/to/keyfile.json" }
   let(:dataset_name) { "test_dataset" }
-
-  let(:dataset_name) { :dummy_dataset }
   let(:table_id)     { :dummy_table   }
 
   describe 'delegation' do
@@ -119,6 +117,18 @@ describe BqFactory::Client do
     it 'should be delegated to the instance of Gcloud' do
       expect(dataset).to receive(:delete).with(force: true)
       expect { subject }.not_to raise_error
+    end
+  end
+
+  describe '#fetch_schema' do
+    subject { instance.fetch_schema(dataset_name, table_id) }
+    let(:schema) { { "fields" => fields } }
+    let(:fields) { { "name" => "test" } }
+
+    it 'should be delegated to the instance of gcloud' do
+      expect(instance).to receive(:table).with(dataset_name, table_id).and_return(table)
+      expect(table).to receive(:schema).and_return(schema)
+      is_expected.to eq fields
     end
   end
 end

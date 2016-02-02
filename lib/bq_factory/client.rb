@@ -28,8 +28,8 @@ module BqFactory
       dataset(dataset_name).table(table_id).delete(force: true)
     end
 
-    def fetch_schema(dataset_name, table_name)
-      dataset(dataset_name).table(table_name).schema["fields"]
+    def fetch_schema(dataset_name, table_id)
+      table(dataset_name, table_id).schema["fields"]
     end
 
     private
