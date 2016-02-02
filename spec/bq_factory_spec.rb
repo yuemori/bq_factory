@@ -33,7 +33,8 @@ describe BqFactory do
   end
 
   describe '.create_view' do
-    subject { described_class.create_view(table_id, rows) }
+    subject { described_class.create_view(dataset_name, table_id, rows) }
+    let(:dataset_name) { :dummy_dataset }
     let(:table_id) { :dummy_table }
     let(:rows)     { { name: 'foo' } }
     let(:client)   { double('Client') }
@@ -42,7 +43,7 @@ describe BqFactory do
     it 'should be delegated to client' do
       expect(described_class).to receive(:build_query).with(table_id, rows).and_return(query)
       expect(described_class).to receive(:client).and_return(client)
-      expect(client).to receive(:create_view).with(table_id, query)
+      expect(client).to receive(:create_view).with(dataset_name, table_id, query)
       subject
     end
   end

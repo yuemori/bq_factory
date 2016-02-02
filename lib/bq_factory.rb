@@ -29,9 +29,9 @@ module BqFactory
       DSL.run(block)
     end
 
-    def create_view(factory_name, rows)
+    def create_view(dataset_name, factory_name, rows)
       query = build_query(factory_name, rows)
-      client.create_view(factory_name, query)
+      client.create_view(dataset_name, factory_name, query)
     end
 
     def build_query(factory_name, rows)
