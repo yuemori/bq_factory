@@ -2,11 +2,14 @@ require 'gcloud'
 
 module BqFactory
   class Client
-    delegate :create_view, to: :dataset
     delegate :bigquery, to: :gcloud
 
     def initialize(project_id, keyfile_path)
       @gcloud = Gcloud.new project_id, keyfile_path
+    end
+
+    def create_view(dataset_name, table_id, query)
+      dataset(dataset_name).create_view(table_id, query)
     end
 
     def create_dataset!(dataset_name)

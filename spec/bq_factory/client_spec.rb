@@ -62,7 +62,8 @@ describe BqFactory::Client do
   end
 
   describe "#create_view" do
-    let(:table_id) { "test" }
+    let(:dataset_name) { :dummy_dataset }
+    let(:table_id) { :dummy_table }
     let(:query)    { "SELECT * FROM test" }
 
     before do
@@ -70,7 +71,7 @@ describe BqFactory::Client do
       allow(bigquery).to receive(:dataset).and_return(dataset)
     end
 
-    subject { instance.create_view(table_id, query) }
+    subject { instance.create_view(dataset_name, table_id, query) }
 
     it 'should be delegated to the instance of Gcloud' do
       expect(dataset).to receive(:create_view).with(table_id, query)
