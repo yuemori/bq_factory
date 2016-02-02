@@ -3,6 +3,28 @@ require 'spec_helper'
 describe BqFactory::Record do
   let(:instance) { described_class.new(schema) }
 
+  describe '#new' do
+    subject { instance }
+
+    context 'when schema is not Array' do
+      let(:schema) { { name: "age", type: "INTEGER" } }
+
+      it { expect { subject }.to raise_error ArgumentError }
+    end
+
+    context 'when schema key is symbol' do
+      let(:schema) { [{ name: "age", type: "INTEGER" }] }
+
+      it { expect { subject }.not_to raise_error }
+    end
+
+    context 'when schema key is string' do
+      let(:schema) { [{ "name" => "age", "type" => "INTEGER" }] }
+
+      it { expect { subject }.not_to raise_error }
+    end
+  end
+
   describe '#respond_to?' do
     subject { instance.respond_to?(method_name) }
     let(:schema) { [column] }

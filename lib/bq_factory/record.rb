@@ -1,12 +1,20 @@
+require 'hashie'
+
 module BqFactory
   class Record
     include Enumerable
 
     delegate :include?, to: :items
 
-    def initialize(schema, hash = {})
-      schema.each { |column| items[column[:name]] = Attribute.new(column[:name], column[:type]) }
-      hash.each { |key, value| send(:"#{key}=", value) }
+    def initialize(schema, params = {})
+      raise ArgumentError.new, "Schema is not Array" unless schema.is_a? Array
+
+      schema.each do |hash|
+        column = Hashie::Mash.new(hash)
+        items[column.name] = Attribute.new(column.name, column.type)
+      end
+
+      params.each { |key, value| send(:"#{key}=", value) }
     end
 
     def find(name)
