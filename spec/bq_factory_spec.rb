@@ -92,7 +92,7 @@ describe BqFactory do
       let!(:column4) { { name: "float", type: "FLOAT" } }
       let!(:column5) { { name: "boolean", type: "BOOLEAN" } }
 
-      let!(:rows) { [row1, row2, row3, row4, row5].inject({}) { |hash, row| hash.merge row  } }
+      let!(:rows) { [row1, row2, row3, row4, row5].reduce({}) { |hash, row| hash.merge row } }
       let!(:row1) { { column1[:name] => Time.now.getutc } }
       let!(:row2) { { column2[:name] => "test" } }
       let!(:row3) { { column3[:name] => 1 } }
