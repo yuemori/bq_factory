@@ -16,6 +16,10 @@ module BqFactory
       bigquery.create_dataset(dataset_name)
     end
 
+    def create_table!(dataset_name, table_id, schema)
+      dataset(dataset_name).create_table(table_id, schema: schema)
+    end
+
     def delete_dataset!(dataset_name)
       dataset(dataset_name).delete(force: true)
     end

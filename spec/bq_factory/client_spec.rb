@@ -59,6 +59,17 @@ describe BqFactory::Client do
     end
   end
 
+  describe '#create_table!' do
+    subject { instance.create_table!(dataset_name, table_id, schema) }
+    let(:schema) { double('Schema') }
+
+    it 'should delegated to Gcloud classes' do
+      expect(instance).to receive(:dataset).with(dataset_name).and_return(dataset)
+      expect(dataset).to receive(:create_table).with(table_id, schema: schema)
+      subject
+    end
+  end
+
   describe "#create_view" do
     let(:query) { "SELECT * FROM test" }
 
