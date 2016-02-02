@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe BqFactory::Client do
-  let(:client)   { described_class.new(project_id, keyfile_path) }
+  let(:instance)   { described_class.new(project_id, keyfile_path) }
   let(:bigquery) { double('Bigquery')  }
   let(:dataset)  { double('Dataset')   }
 
@@ -10,7 +10,7 @@ describe BqFactory::Client do
   let(:dataset_name) { "test_dataset" }
 
   describe 'delegation' do
-    subject { client }
+    subject { instance }
 
     it { is_expected.to delegate_method(:bigquery).to(:gcloud) }
     it { is_expected.to delegate_method(:dataset).to(:bigquery) }
@@ -22,11 +22,11 @@ describe BqFactory::Client do
     let(:query)    { "SELECT * FROM test" }
 
     before do
-      allow(client).to receive(:bigquery).and_return(bigquery)
+      allow(instance).to receive(:bigquery).and_return(bigquery)
       allow(bigquery).to receive(:dataset).and_return(dataset)
     end
 
-    subject { client.create_view(table_id, query) }
+    subject { instance.create_view(table_id, query) }
 
     it 'should be delegated to the instance of Gcloud' do
       expect(dataset).to receive(:create_view).with(table_id, query)
@@ -36,10 +36,10 @@ describe BqFactory::Client do
 
   describe "#dataset_create!" do
     before do
-      allow(client).to receive(:bigquery).and_return(bigquery)
+      allow(instance).to receive(:bigquery).and_return(bigquery)
     end
 
-    subject { client.dataset_create!(dataset_name) }
+    subject { instance.dataset_create!(dataset_name) }
 
     it 'should be delegated to the instance of Gcloud' do
       expect(bigquery).to receive(:create_dataset).with(dataset_name)
@@ -49,11 +49,11 @@ describe BqFactory::Client do
 
   describe "#dataset_destroy!" do
     before do
-      allow(client).to receive(:bigquery).and_return(bigquery)
+      allow(instance).to receive(:bigquery).and_return(bigquery)
       allow(bigquery).to receive(:dataset).with(dataset_name).and_return(dataset)
     end
 
-    subject { client.dataset_destroy!(dataset_name) }
+    subject { instance.dataset_destroy!(dataset_name) }
 
     it 'should be delegated to the instance of Gcloud' do
       expect(dataset).to receive(:delete).with(force: true)

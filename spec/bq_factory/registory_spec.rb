@@ -1,19 +1,19 @@
 require 'spec_helper'
 
 describe BqFactory::Registory do
-  let(:registory) { described_class.new(registory_name) }
+  let(:instance) { described_class.new(registory_name) }
   let(:registory_name) { "Test" }
 
   describe '#each' do
-    subject { registory.each(&block) }
+    subject { instance.each(&block) }
     let(:block) { -> {} }
 
     it { expect { subject }.not_to raise_error }
   end
 
   describe '#find' do
-    subject { registory.find(name) }
-    before  { registory.register(name, item) }
+    subject { instance.find(name) }
+    before  { instance.register(name, item) }
     let(:item) { double('Item') }
     let(:name) { 'test' }
 
@@ -21,7 +21,7 @@ describe BqFactory::Registory do
   end
 
   describe '#register' do
-    subject { registory.register(name, item) }
+    subject { instance.register(name, item) }
     let(:item) { double('Item') }
     let(:name) { 'test' }
 
@@ -29,8 +29,8 @@ describe BqFactory::Registory do
   end
 
   describe '#items' do
-    subject { registory.items }
-    before  { registory.register(name, item) }
+    subject { instance.items }
+    before  { instance.register(name, item) }
     let(:item) { double('Item') }
     let(:name) { 'test' }
     let(:expected_item) { { name => item } }
@@ -39,11 +39,11 @@ describe BqFactory::Registory do
   end
 
   describe '#clear' do
-    subject { registory.items }
+    subject { instance.items }
 
     before do
-      registory.register(name, item)
-      registory.clear
+      instance.register(name, item)
+      instance.clear
     end
 
     let(:item) { double('Item') }
@@ -53,12 +53,12 @@ describe BqFactory::Registory do
   end
 
   describe '#registered?' do
-    subject { registory.registered?(name) }
+    subject { instance.registered?(name) }
     let(:item) { double('Item') }
     let(:name) { 'test' }
 
     context 'when registered' do
-      before { registory.register(name, item) }
+      before { instance.register(name, item) }
       it { is_expected.to be_truthy }
     end
 
