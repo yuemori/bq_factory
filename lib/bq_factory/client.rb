@@ -4,8 +4,8 @@ module BqFactory
   class Client
     delegate :create_view, to: :dataset
 
-    def dataset_create!
-      bigquery.create_dataset(BqFactory.default_dataset)
+    def dataset_create!(dataset_name)
+      bigquery.create_dataset(dataset_name)
     end
 
     def dataset_destroy!

@@ -39,7 +39,7 @@ describe BqFactory::Client do
       allow(client).to receive(:bigquery).and_return(bigquery)
     end
 
-    subject { client.dataset_create! }
+    subject { client.dataset_create!(dataset_name) }
 
     it 'should be delegated to the instance of Gcloud' do
       expect(bigquery).to receive(:create_dataset).with(dataset_name)
