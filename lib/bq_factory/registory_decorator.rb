@@ -1,7 +1,5 @@
 module BqFactory
   class RegistoryDecorator
-    delegate :find, to: :registory
-
     attr_reader :registory
 
     def initialize(registory)
@@ -20,6 +18,10 @@ module BqFactory
 
     def registered?(name)
       registory.registered? name.to_sym
+    end
+
+    def find(name)
+      registory.find(name.to_sym)
     end
   end
 end
