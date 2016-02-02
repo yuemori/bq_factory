@@ -1,6 +1,6 @@
 module BqFactory
   class Configuration
-    attr_accessor :project_id, :keyfile_path, :default_dataset
+    attr_accessor :project_id, :keyfile_path
 
     def schemas
       @schemas ||= RegistoryDecorator.new(Registory.new('schema'))
