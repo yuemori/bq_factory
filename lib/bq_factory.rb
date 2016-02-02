@@ -45,7 +45,7 @@ module BqFactory
       schemas.find(name)
     end
 
-    def fetch_schema(dataset_name, table_name)
+    def fetch_schema_from_bigquery(dataset_name, table_name)
       client.fetch_schema(dataset_name, table_name)
     end
 

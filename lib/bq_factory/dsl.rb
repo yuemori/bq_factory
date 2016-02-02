@@ -7,7 +7,7 @@ module BqFactory
     def factory(name, options = {})
       dataset_name = options.key?(:dataset) ? options[:dataset] : BqFactory.default_dataset
       table_name = options.key?(:table) ? options[:table] : name
-      schema = BqFactory.fetch_schema(dataset_name, table_name)
+      schema = BqFactory.fetch_schema_from_bigquery(dataset_name, table_name)
       BqFactory.register(name, schema)
     end
   end

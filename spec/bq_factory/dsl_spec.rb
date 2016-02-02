@@ -22,7 +22,7 @@ describe BqFactory::DSL do
       let(:default_dataset) { :default_dataset }
 
       it 'should get expect table' do
-        expect(BqFactory).to receive(:fetch_schema).with(expect_dataset, expect_table).and_return(schema)
+        expect(BqFactory).to receive(:fetch_schema_from_bigquery).with(expect_dataset, expect_table).and_return(schema)
         expect(BqFactory).to receive(:register).with(name, schema)
         subject
       end
