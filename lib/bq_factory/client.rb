@@ -3,6 +3,8 @@ require 'gcloud'
 module BqFactory
   class Client
     delegate :create_view, to: :dataset
+    delegate :dataset, to: :bigquery
+    delegate :bigquery, to: :gcloud
 
     def dataset_create!(dataset_name)
       bigquery.create_dataset(dataset_name)
@@ -20,14 +22,6 @@ module BqFactory
 
     def gcloud
       Gcloud.new BqFactory.project_id, BqFactory.keyfile_path
-    end
-
-    def bigquery
-      gcloud.bigquery
-    end
-
-    def dataset(dataset_name = BqFactory.default_dataset)
-      bigquery.dataset(dataset_name)
     end
   end
 end

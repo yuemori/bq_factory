@@ -17,6 +17,10 @@ describe BqFactory::Client do
     end
   end
 
+  it { is_expected.to delegate_method(:bigquery).to(:gcloud) }
+  it { is_expected.to delegate_method(:dataset).to(:bigquery) }
+  it { is_expected.to delegate_method(:create_view).to(:dataset) }
+
   describe "#create_view" do
     let(:table_id) { "test" }
     let(:query)    { "SELECT * FROM test" }
