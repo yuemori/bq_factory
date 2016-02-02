@@ -65,7 +65,7 @@ describe BqFactory::Client do
 
     it 'should delegated to Gcloud classes' do
       expect(instance).to receive(:dataset).with(dataset_name).and_return(dataset)
-      expect(dataset).to receive(:create_table).with(table_id, schema: schema)
+      expect(dataset).to receive(:create_table).with(table_id, schema: { fields: schema })
       subject
     end
   end

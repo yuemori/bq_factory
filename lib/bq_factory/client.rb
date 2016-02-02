@@ -17,7 +17,7 @@ module BqFactory
     end
 
     def create_table!(dataset_name, table_id, schema)
-      dataset(dataset_name).create_table(table_id, schema: schema)
+      dataset(dataset_name).create_table(table_id, schema: { fields: schema })
     end
 
     def delete_dataset!(dataset_name)
