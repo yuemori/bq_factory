@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe BqFactory::Client do
-  let(:client)   { described_class.new }
+  let(:client)   { described_class.new(project_id, keyfile_path) }
   let(:bigquery) { double('Bigquery')  }
   let(:dataset)  { double('Dataset')   }
 
@@ -9,17 +9,13 @@ describe BqFactory::Client do
   let(:keyfile_path) { "/path/to/keyfile.json" }
   let(:dataset_name) { "test_dataset" }
 
-  before do
-    BqFactory.configure do |config|
-      config.project_id = project_id
-      config.keyfile_path = keyfile_path
-      config.default_dataset = dataset_name
-    end
-  end
+  describe 'delegation' do
+    subject { client }
 
-  it { is_expected.to delegate_method(:bigquery).to(:gcloud) }
-  it { is_expected.to delegate_method(:dataset).to(:bigquery) }
-  it { is_expected.to delegate_method(:create_view).to(:dataset) }
+    it { is_expected.to delegate_method(:bigquery).to(:gcloud) }
+    it { is_expected.to delegate_method(:dataset).to(:bigquery) }
+    it { is_expected.to delegate_method(:create_view).to(:dataset) }
+  end
 
   describe "#create_view" do
     let(:table_id) { "test" }

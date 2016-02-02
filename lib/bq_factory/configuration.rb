@@ -7,7 +7,7 @@ module BqFactory
     end
 
     def client
-      @client ||= BqFactory::Client.new
+      @client ||= BqFactory::Client.new(project_id, keyfile_path)
     end
   end
 end

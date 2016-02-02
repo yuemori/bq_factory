@@ -6,6 +6,10 @@ module BqFactory
     delegate :dataset, to: :bigquery
     delegate :bigquery, to: :gcloud
 
+    def initialize(project_id, keyfile_path)
+      @gcloud = Gcloud.new project_id, keyfile_path
+    end
+
     def dataset_create!(dataset_name)
       bigquery.create_dataset(dataset_name)
     end
@@ -20,8 +24,6 @@ module BqFactory
 
     private
 
-    def gcloud
-      Gcloud.new BqFactory.project_id, BqFactory.keyfile_path
-    end
+    attr_reader :gcloud
   end
 end
