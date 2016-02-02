@@ -45,6 +45,14 @@ module BqFactory
       schemas.find(name)
     end
 
+    def create_dataset!(dataset_name)
+      client.create_dataset!(dataset_name)
+    end
+
+    def delete_dataset!(dataset_name)
+      client.delete_dataset!(dataset_name)
+    end
+
     def fetch_schema_from_bigquery(dataset_name, table_name)
       client.fetch_schema(dataset_name, table_name)
     end
