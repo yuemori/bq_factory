@@ -70,6 +70,18 @@ describe BqFactory::Client do
     end
   end
 
+  describe '#delete_table!' do
+    subject { instance.delete_table!(dataset_name, table_id) }
+    let(:schema) { double('Schema') }
+
+    it 'should delegated to Gcloud classes' do
+      expect(instance).to receive(:dataset).with(dataset_name).and_return(dataset)
+      expect(dataset).to receive(:table).with(table_id).and_return(table)
+      expect(table).to receive(:delete).with(force: true)
+      subject
+    end
+  end
+
   describe "#create_view" do
     let(:query) { "SELECT * FROM test" }
 

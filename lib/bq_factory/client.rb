@@ -24,6 +24,10 @@ module BqFactory
       dataset(dataset_name).delete(force: true)
     end
 
+    def delete_table!(dataset_name, table_id)
+      dataset(dataset_name).table(table_id).delete(force: true)
+    end
+
     def fetch_schema(dataset_name, table_name)
       dataset(dataset_name).table(table_name).schema["fields"]
     end
