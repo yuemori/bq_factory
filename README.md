@@ -28,7 +28,7 @@ Or install it yourself as:
 
 Add configuration to initializer or spec_helper.
 
-```
+```ruby
 # RSpec
 # spec/spec_helper.rb
 
@@ -40,17 +40,18 @@ end
 
 and, setup factories in fixture file.
 
-```
+```ruby
 BqFactory.define do
   # Reference target of dataset and tables in options.
-  # Factory read schema from reference target!
-  factory :user, dataset: 'my_dataset', table: 'my_table'
+  # Factory fetch schema from  bigquery
+  factory :user, dataset: 'my_dataset' # => reference my_dataset.user table
+  factory :user, dataset: 'my_dataset', table: 'my_table' # => reference my_dataset.my_table
 end
 ```
 
 ### Use Case
 
-Example, if `user` table schema is this:
+Example, if define `factory :user, dataset: 'test_dataset'` and `user` table schema is this:
 
 |column_name|type|
 |:----|:----|
@@ -73,32 +74,32 @@ describe TestClass do
   let(:bob) { { name: 'bob', age: 30, create_at: "2016-01-01 00:00:00", height: 170.1, admin: false } }
 
   describe 'build query' do
-    subject { BqFactory.build_query 'user', alice }
+    subject { BqFactory.build_query :user, alice }
     let(:query) { 'SELECT * FROM (SELECT "alice" AS name, 20 AS age, TIMESTAMP("2016-01-01 00:00:00") AS create_at, 150.1 AS height, true AS admin )' }
     it { is_expected.to eq query }
   end
 
   describe 'from Hash' do
-    before { BqFactory.create_view 'test_dataset', 'test_view', alice }
+    before { BqFactory.create_view :test_dataset, :test_view, alice }
     # => Build query 'SELECT * FROM (SELECT "alice" AS name, 20 AS age, TIMESTAMP("2016-01-01 00:00:00") AS create_at, 150.1 AS height, true AS admin )'
     # And create view "test_view" to "test_dataset"
 
     let(:query) { "SELECT * FROM [test_dataset.test_view]" }
     subject { BqFactory.query(query) }
 
-    it { expect(subject.first.name).to eq alise["name"] }
+    it { expect(subject.first).to eq alice
   end
 
   describe 'from Array' do
-    before { BqFactory.create_view 'test_dataset', 'test_view', [alice, bob] }
+    before { BqFactory.create_view :test_dataset, :test_view, [alice, bob] }
     # => Build query 'SELECT * FROM (SELECT "alice" AS name, 20 AS age, TIMESTAMP("2016-01-01 00:00:00") AS create_at, 150.1 AS height, true AS admin ), (SELECT "bob" AS name, 30 AS age, TIMESTAMP("2016-01-01 00:00:00") AS create_at, 170.1 AS height, false AS admafterin)'
     # And create view "test_view" to "test_dataset"
 
     let(:query) { "SELECT * FROM [test_dataset.test_view]" }
     subject { BqFactory.query(query) }
 
-    it { expect(subject.first["name"]).to eq alise["name"] }
-    it { expect(subject.last["name"]).to eq bob["name"] }
+    it { expect(subject.first).to eq alise }
+    it { expect(subject.last).to eq bob }
   end
 
   after(:all) do
@@ -112,13 +113,13 @@ end
 ### Install dependencies
 
 ```shell
-bundle install
+$ bundle install
 ```
 
 ### Run rspec
 
-```
-bundle exec rspec
+```shell
+$ bundle exec rspec
 ```
 
 ## Contributing
