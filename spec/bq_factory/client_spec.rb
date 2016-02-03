@@ -131,4 +131,15 @@ describe BqFactory::Client do
       is_expected.to eq fields
     end
   end
+
+  describe '#query' do
+    subject { instance.query(query) }
+    let(:query) { "SELECT * FROM [test_dataset.test_table]" }
+
+    it 'should be delegated to the instance of gcloud' do
+      expect(instance).to receive(:bigquery).and_return(bigquery)
+      expect(bigquery).to receive(:query).with(query)
+      subject
+    end
+  end
 end

@@ -32,6 +32,10 @@ module BqFactory
       table(dataset_name, table_id).schema["fields"]
     end
 
+    def query(query)
+      bigquery.query(query)
+    end
+
     private
 
     attr_reader :gcloud
