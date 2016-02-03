@@ -97,8 +97,8 @@ describe TestClass do
     let(:query) { "SELECT * FROM [test_dataset.test_view]" }
     subject { BqFactory.query(query) }
 
-    it { expect(subject.first.name).to eq alise["name"] }
-    it { expect(subject.last.name).to eq bob["name"] }
+    it { expect(subject.first["name"]).to eq alise["name"] }
+    it { expect(subject.last["name"]).to eq bob["name"] }
   end
 
   after(:all) do
