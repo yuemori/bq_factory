@@ -79,6 +79,18 @@ describe BqFactory do
     it { is_expected.to eq schema }
   end
 
+  describe '.query' do
+    subject { described_class.query(query) }
+    let(:query) { "SELECT * FROM [test_dataset.test_table]" }
+    let(:client) { double('Client') }
+
+    it 'should be delegated to the Client' do
+      expect(described_class).to receive(:client).and_return(client)
+      expect(client).to receive(:query).with(query)
+      subject
+    end
+  end
+
   if ENV['PROJECT_ID'] && ENV['KEYFILE_PATH']
     describe 'integration test' do
       let!(:existing_dataset) { "existing_dataset" }

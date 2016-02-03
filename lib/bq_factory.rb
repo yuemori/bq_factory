@@ -65,6 +65,10 @@ module BqFactory
       client.fetch_schema(dataset_name, table_name)
     end
 
+    def query(query)
+      client.query(query)
+    end
+
     def register(factory_name, schema)
       schemas.register(factory_name, schema)
     end
