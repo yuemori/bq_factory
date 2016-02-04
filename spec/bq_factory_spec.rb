@@ -82,7 +82,7 @@ describe BqFactory do
   end
 
   if ENV['PROJECT_ID'] && ENV['KEYFILE_PATH']
-    describe 'integration test' do
+    describe 'integration test', :vcr do
       let!(:existing_dataset) { "existing_dataset" }
       let!(:view_dataset) { "view_dataset" }
       let!(:table_name) { "test_table" }

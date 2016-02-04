@@ -12,3 +12,4 @@
 /Guardfile
 /keys
 /.env
+/spec/vcr
