@@ -2,10 +2,12 @@ require 'spec_helper'
 
 describe BqFactory do
   describe 'delegation' do
-    describe 'to configuration' do
-      %i(client project_id keyfile_path schemas).each do |method|
-        it { is_expected.to delegate_method(method).to(:configuration) }
-      end
+    %i(
+      fetch_schema_from_bigquery query schema_by_name
+      create_dataset! delete_dataset! create_table! delete_table!
+      register project_id keyfile_path configuration client
+    ).each do |method_name|
+      it { is_expected.to delegate_method(method_name).to(:facade) }
     end
   end
 
@@ -69,7 +71,7 @@ describe BqFactory do
     end
   end
 
-  describe '.schema_by_name' do
+  describe 'fetch schema from registory' do
     subject { described_class.schema_by_name(name) }
     before  { described_class.register(name, schema) }
 
@@ -77,18 +79,6 @@ describe BqFactory do
     let(:schema) { double('Schema') }
 
     it { is_expected.to eq schema }
-  end
-
-  describe '.query' do
-    subject { described_class.query(query) }
-    let(:query) { "SELECT * FROM [test_dataset.test_table]" }
-    let(:client) { double('Client') }
-
-    it 'should be delegated to the Client' do
-      expect(described_class).to receive(:client).and_return(client)
-      expect(client).to receive(:query).with(query)
-      subject
-    end
   end
 
   if ENV['PROJECT_ID'] && ENV['KEYFILE_PATH']

@@ -15,15 +15,11 @@ require "bq_factory/registory_decorator"
 
 module BqFactory
   class << self
-    delegate :client, :project_id, :keyfile_path, :schemas, to: :configuration
+    delegate :fetch_schema_from_bigquery, :create_dataset!, :delete_dataset!, :create_table!, :delete_table!, :query, :register, :schema_by_name, :configuration, :project_id, :keyfile_path, :client, to: :facade
 
     def configure
       yield configuration if block_given?
       configuration
-    end
-
-    def configuration
-      @configuration ||= Configuration.new
     end
 
     def define(&block)
@@ -42,36 +38,10 @@ module BqFactory
       QueryBuilder.new(records).build
     end
 
-    def schema_by_name(factory_name)
-      schemas.find(factory_name)
-    end
+    private
 
-    def create_dataset!(dataset_name)
-      client.create_dataset!(dataset_name)
-    end
-
-    def create_table!(dataset_name, table_name, schema)
-      client.create_table!(dataset_name, table_name, schema)
-    end
-
-    def delete_dataset!(dataset_name)
-      client.delete_dataset!(dataset_name)
-    end
-
-    def delete_table!(dataset_name, table_name)
-      client.delete_table!(dataset_name, table_name)
-    end
-
-    def fetch_schema_from_bigquery(dataset_name, table_name)
-      client.fetch_schema(dataset_name, table_name)
-    end
-
-    def query(query)
-      client.query(query)
-    end
-
-    def register(factory_name, schema)
-      schemas.register(factory_name, schema)
+    def facade
+      @facade ||= Facade.new
     end
   end
 end
