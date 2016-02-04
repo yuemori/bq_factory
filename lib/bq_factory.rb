@@ -15,7 +15,8 @@ require "bq_factory/registory_decorator"
 
 module BqFactory
   class << self
-    delegate :fetch_schema_from_bigquery, :create_dataset!, :delete_dataset!, :create_table!, :delete_table!, :query, :register, :schema_by_name, :configuration, :project_id, :keyfile_path, :client, to: :facade
+    delegate :fetch_schema_from_bigquery, :create_dataset!, :delete_dataset!, :create_table!, :delete_table!, :query,
+             :register, :schema_by_name, :configuration, :project_id, :keyfile_path, :client, to: :facade
 
     def configure
       yield configuration if block_given?
