@@ -1,5 +1,5 @@
 module BqFactory
-  class Facade
+  class Proxy
     delegate :fetch_schema, :create_dataset!, :delete_dataset!, :create_table!, :delete_table!, :query, to: :client
     alias :fetch_schema_from_bigquery :fetch_schema
 

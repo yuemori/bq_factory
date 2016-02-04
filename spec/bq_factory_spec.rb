@@ -7,7 +7,7 @@ describe BqFactory do
       create_dataset! delete_dataset! create_table! delete_table!
       register project_id keyfile_path configuration client
     ).each do |method_name|
-      it { is_expected.to delegate_method(method_name).to(:facade) }
+      it { is_expected.to delegate_method(method_name).to(:proxy) }
     end
   end
 

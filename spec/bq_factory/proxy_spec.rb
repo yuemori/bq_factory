@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe BqFactory::Facade do
+describe BqFactory::Proxy do
   describe 'delegation' do
     describe 'to client' do
       %i(fetch_schema create_dataset! delete_dataset! create_table! delete_table! query).each do |method_name|
