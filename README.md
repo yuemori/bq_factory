@@ -38,7 +38,43 @@ BqFactory.configure do |config|
 end
 ```
 
-and, setup factories in fixture file.
+### specify schema
+
+This pattern is fetch schema from hash(not call api access).
+
+First, setup factories in fixture file:
+
+```ruby
+BqFactory.define do
+  factory :user, schema: [{ name: 'name', type: 'INTEGER' }, { name: 'age', type: 'INTEGER' }]
+end
+```
+
+And, In your test code:
+
+```
+describe 'test query' do
+  before(:all) do
+    BqFactory.create_dataset!(:test_dataset)
+  end
+
+  describe 'query is valid' do
+    before { BqFactory.create_view(:test_dataset, :test_view, users) }
+    subject { BqFactory.query(query) }
+
+    let(:users) { [{ name: 'alice', age: 20 }] }
+    let(:query) { 'SELECT * FROM [test_dataset.test_view]' }
+
+    it { expect(subject.first).to eq users.first }
+  end
+end
+```
+
+### fetch schema from bigquery
+
+This pattern is fetch schema from bigquery(call api access).
+
+First, setup factories in fixture file:
 
 ```ruby
 BqFactory.define do
@@ -49,9 +85,7 @@ BqFactory.define do
 end
 ```
 
-### Use Case
-
-Example, if define `factory :user, dataset: 'test_dataset'` and `user` table schema is this:
+If define `factory :user, dataset: 'test_dataset'` and `user` table schema is this:
 
 |column_name|type|
 |:----|:----|
@@ -61,12 +95,12 @@ Example, if define `factory :user, dataset: 'test_dataset'` and `user` table sch
 |height|FLOAT|
 |admin|BOOLEAN|
 
-In your test code:
+And, In your test code:
 
 ```ruby
 # RSpec
 
-describe TestClass do
+describe 'query test' do
   before(:all) do
     BqFactory.create_dataset!('test_dataset') # => create test dataset
   end
@@ -80,7 +114,7 @@ describe TestClass do
   end
 
   describe 'from Hash' do
-    before { BqFactory.create_view :test_dataset, :test_view, alice }
+    before { BqFactory.create_view :test_dataset, :test_view1, alice }
     # => Build query 'SELECT * FROM (SELECT "alice" AS name, 20 AS age, TIMESTAMP("2016-01-01 00:00:00") AS create_at, 150.1 AS height, true AS admin )'
     # And create view "test_view" to "test_dataset"
 
@@ -91,7 +125,7 @@ describe TestClass do
   end
 
   describe 'from Array' do
-    before { BqFactory.create_view :test_dataset, :test_view, [alice, bob] }
+    before { BqFactory.create_view :test_dataset, :test_view2, [alice, bob] }
     # => Build query 'SELECT * FROM (SELECT "alice" AS name, 20 AS age, TIMESTAMP("2016-01-01 00:00:00") AS create_at, 150.1 AS height, true AS admin ), (SELECT "bob" AS name, 30 AS age, TIMESTAMP("2016-01-01 00:00:00") AS create_at, 170.1 AS height, false AS admafterin)'
     # And create view "test_view" to "test_dataset"
 

@@ -4,10 +4,14 @@ module BqFactory
       new.instance_eval(&block)
     end
 
-    def factory(name, dataset:, table: nil)
+    def factory(name, dataset:, table: nil, schema: nil)
       name = name.to_sym
-      table_name = table.nil? ? name : table
-      schema = BqFactory.fetch_schema_from_bigquery(dataset, table_name)
+
+      if schema.nil?
+        table_name = table.nil? ? name : table
+        schema = BqFactory.fetch_schema_from_bigquery(dataset, table_name)
+      end
+
       BqFactory.register(name, schema)
     end
   end

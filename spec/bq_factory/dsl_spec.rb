@@ -11,9 +11,9 @@ describe BqFactory::DSL do
   end
 
   describe '#factory' do
-    subject { described_class.new.factory(name, dataset: dataset, table: table) }
+    subject { described_class.new.factory(name, dataset: dataset, table: table, schema: schema) }
 
-    let(:schema)  { double('Schema') }
+    let(:schema)  { nil }
     let(:name)    { :dummy }
     let(:dataset) { :dummy_dataset }
 
@@ -32,11 +32,22 @@ describe BqFactory::DSL do
       it_behaves_like 'fetch table from bigquery'
     end
 
-    context 'when specify table name in options' do
+    context 'when specify table name' do
       let(:table) { :dummy_table }
       let(:expect_table) { table }
 
       it_behaves_like 'fetch table from bigquery'
+    end
+
+    context 'when specify schema' do
+      let(:table) { nil }
+      let(:schema) { [{ name: 'name', type: 'STRING' }, { name: 'age', type: 'INTEGER' }] }
+
+      it 'should register to BqFactory' do
+        expect(BqFactory).not_to receive(:fetch_schema_from_bigquery)
+        expect(BqFactory).to receive(:register).with(name, schema)
+        subject
+      end
     end
   end
 end
