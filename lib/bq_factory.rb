@@ -33,10 +33,8 @@ module BqFactory
     end
 
     def build_query(factory_name, rows)
-      rows = [rows] unless rows.instance_of? Array
       schema = schema_by_name(factory_name)
-      records = rows.flatten.map { |row| Record.new(schema, row) }
-      QueryBuilder.new(records).build
+      QueryBuilder.new(schema).build(rows)
     end
 
     private

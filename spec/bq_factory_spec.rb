@@ -52,6 +52,7 @@ describe BqFactory do
 
   describe '.build_query' do
     subject { described_class.build_query(table_id, hash) }
+
     let(:table_id) { :dummy_table }
     let(:hash)     { [{ name: 'alice' }, { name: 'bob' }] }
     let(:schema)   { [{ name: 'name', type: 'STRING' }] }

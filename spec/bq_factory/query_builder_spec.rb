@@ -1,13 +1,11 @@
 require 'spec_helper'
 
 describe BqFactory::QueryBuilder do
-  let(:instance) { described_class.new(records) }
-  let(:records)  { [record] }
-  let(:record)   { BqFactory::Record.new(schema, rows) }
+  let(:instance) { described_class.new(schema) }
 
   describe '#build' do
     shared_examples_for "create query from rows" do
-      subject { instance.build }
+      subject { instance.build(rows) }
 
       it { is_expected.to eq query }
     end
@@ -34,12 +32,14 @@ describe BqFactory::QueryBuilder do
     end
 
     context 'when params contains a plural of rows' do
-      let(:records) { [BqFactory::Record.new(schema, alice), BqFactory::Record.new(schema, bob)] }
+      let(:rows)  { [alice, bob] }
       let(:alice) { { name: 'alice', age: 20 } }
       let(:bob)   { { name: 'bob', age: 21 } }
+
       let(:schema) { [name_schema, age_schema] }
       let(:name_schema) { { name: 'name', type: 'STRING' } }
       let(:age_schema)  { { name: 'age', type: 'INTEGER' } }
+
       let(:query) do
         %{SELECT * FROM (SELECT "#{alice[:name]}" AS name, #{alice[:age]} AS age), } +
           %{(SELECT "#{bob[:name]}" AS name, #{bob[:age]} AS age)}
