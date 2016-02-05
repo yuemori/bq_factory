@@ -33,6 +33,6 @@ Shoulda::Matchers.configure do |config|
 end
 
 BqFactory.configure do |config|
-  config.project_id = ENV['PROJECT_ID'] || '<PROJECT_ID>'
-  config.keyfile_path = ENV['KEYFILE_PATH'] || '/path/to/keyfile.json'
+  config.project_id = 'bq-factory'
+  config.keyfile_path = File.expand_path '../../keys/bq-factory.json', __FILE__
 end
