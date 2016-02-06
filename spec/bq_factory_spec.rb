@@ -114,8 +114,8 @@ describe BqFactory do
   end
 
   describe 'integration test', :vcr do
-    let!(:existing_dataset) { "existing_dataset" }
-    let!(:view_dataset) { "view_dataset" }
+    let!(:existing_dataset) { "existing_dataset#{Time.now.to_i}" }
+    let!(:view_dataset) { "view_dataset#{Time.now.to_i}" }
     let!(:table_name) { "test_table" }
     let!(:schema) { [column1, column2, column3, column4, column5] }
 
@@ -137,7 +137,7 @@ describe BqFactory do
       BqFactory.create_table!(existing_dataset, table_name, schema)
       BqFactory.create_dataset!(view_dataset)
 
-      BqFactory.register "test_table", dataset: "existing_dataset"
+      BqFactory.register table_name, dataset: existing_dataset
     end
 
     describe '.create_view' do
