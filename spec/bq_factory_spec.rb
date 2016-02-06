@@ -3,7 +3,7 @@ require 'spec_helper'
 describe BqFactory do
   describe 'delegation' do
     %i(
-      fetch_schema_from_bigquery query schema_by_name
+      fetch_schema_from_bigquery query table_by_name
       create_dataset! delete_dataset! create_table! delete_table!
       project_id keyfile_path configuration client
     ).each do |method_name|
@@ -41,10 +41,11 @@ describe BqFactory do
     subject { described_class.build_query(table_id, hash) }
 
     let(:table_id) { :dummy_table }
+    let(:table) { BqFactory::Table.new(table_id, :dummy_dataset, schema) }
     let(:hash)     { [{ name: 'alice' }, { name: 'bob' }] }
     let(:schema)   { [{ name: 'name', type: 'STRING' }] }
 
-    before { allow(described_class).to receive(:schema_by_name).with(table_id).and_return(schema) }
+    before { allow(described_class).to receive(:table_by_name).with(table_id).and_return(table) }
 
     context 'when not array of hash given' do
       let(:hash)  { { name: 'alice' } }
@@ -60,18 +61,22 @@ describe BqFactory do
   end
 
   describe 'fetch schema from registory' do
-    subject { described_class.schema_by_name(name) }
+    subject { described_class.table_by_name(name) }
     before  { described_class.register(name, dataset: :test_dataset, schema: schema) }
 
     let(:name)   { :dummy }
     let(:schema) { double('Schema') }
 
-    it { is_expected.to eq schema }
+    it { expect(subject.schema).to eq schema }
   end
 
   describe '.register' do
     subject { described_class.register(name, dataset: dataset, table: table, schema: schema) }
-    before { allow(described_class).to receive(:proxy).and_return(proxy) }
+
+    before do
+      allow(described_class).to receive(:proxy).and_return(proxy)
+      allow(proxy).to receive(:register)
+    end
 
     let(:schema)  { nil }
     let(:name)    { :dummy }
@@ -79,35 +84,12 @@ describe BqFactory do
     let(:proxy) { double('Proxy') }
     let(:fetch_schema) { double('Schema') }
 
-    shared_examples_for 'fetch table from bigquery' do
-      it 'should get expect schema' do
-        expect(proxy).to receive(:fetch_schema_from_bigquery).with(dataset, expect_table).and_return(fetch_schema)
-        expect(proxy).to receive(:register).with(name, fetch_schema)
-        subject
-      end
-    end
-
-    context 'when not specify table name' do
-      let(:table) { nil }
-      let(:expect_table) { name }
-
-      it_behaves_like 'fetch table from bigquery'
-    end
-
-    context 'when specify table name' do
-      let(:table) { :dummy_table }
-      let(:expect_table) { table }
-
-      it_behaves_like 'fetch table from bigquery'
-    end
-
     context 'when specify schema' do
       let(:table) { nil }
       let(:schema) { [{ name: 'name', type: 'STRING' }, { name: 'age', type: 'INTEGER' }] }
 
       it 'should register to BqFactory' do
         expect(described_class).not_to receive(:fetch_schema_from_bigquery)
-        expect(proxy).to receive(:register).with(name, schema)
         subject
       end
     end

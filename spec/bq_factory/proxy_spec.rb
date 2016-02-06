@@ -24,6 +24,6 @@ describe BqFactory::Proxy do
   describe 'alias' do
     let(:instance) { described_class.new }
     it { expect(instance.method(:fetch_schema)).to eq instance.method(:fetch_schema_from_bigquery) }
-    it { expect(instance.method(:find)).to eq instance.method(:schema_by_name) }
+    it { expect(instance.method(:find)).to eq instance.method(:table_by_name) }
   end
 end

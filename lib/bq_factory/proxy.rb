@@ -4,7 +4,7 @@ module BqFactory
     alias :fetch_schema_from_bigquery :fetch_schema
 
     delegate :register, :find, to: :schemas
-    alias :schema_by_name :find
+    alias :table_by_name :find
 
     delegate :project_id, :keyfile_path, to: :configuration
 
