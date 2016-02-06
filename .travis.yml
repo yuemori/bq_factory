@@ -6,7 +6,7 @@ rvm:
 - ruby-head
 before_install:
 - openssl aes-256-cbc -K $encrypted_8cc2721a8447_key -iv $encrypted_8cc2721a8447_iv
-  -in bq-factory.json.enc -out keys/bq-factory.json -d
+  -in bq-factory.json.enc -out spec/keys/bq-factory.json -d
 - gem install bundler -v "~> 1.10"
 bundler_args: "--jobs=2"
 cache: bundler

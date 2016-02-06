@@ -10,6 +10,6 @@
 /Gemfile.local
 /Gemfile.local.lock
 /Guardfile
-/keys
+/spec/keys/bq-factory.json
 /.env
 /spec/vcr
