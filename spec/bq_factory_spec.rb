@@ -5,7 +5,7 @@ describe BqFactory do
     %i(
       fetch_schema_from_bigquery query schema_by_name
       create_dataset! delete_dataset! create_table! delete_table!
-      register project_id keyfile_path configuration client
+      project_id keyfile_path configuration client
     ).each do |method_name|
       it { is_expected.to delegate_method(method_name).to(:proxy) }
     end
@@ -19,19 +19,6 @@ describe BqFactory do
   describe '.configure' do
     subject { described_class.configure }
     it { is_expected.to be_instance_of BqFactory::Configuration }
-  end
-
-  describe '.define' do
-    let(:table_name) { "dummy_table" }
-    let(:table_id)   { "dummy_table2016" }
-    let(:block)      { -> {} }
-
-    subject { described_class.define(&block) }
-
-    it 'should be delegated to the DSL' do
-      expect(BqFactory::DSL).to receive(:run).with(block)
-      expect { subject }.not_to raise_error
-    end
   end
 
   describe '.create_view' do
@@ -74,12 +61,56 @@ describe BqFactory do
 
   describe 'fetch schema from registory' do
     subject { described_class.schema_by_name(name) }
-    before  { described_class.register(name, schema) }
+    before  { described_class.register(name, dataset: :test_dataset, schema: schema) }
 
     let(:name)   { :dummy }
     let(:schema) { double('Schema') }
 
     it { is_expected.to eq schema }
+  end
+
+  describe '.register' do
+    subject { described_class.register(name, dataset: dataset, table: table, schema: schema) }
+    before { allow(described_class).to receive(:proxy).and_return(proxy) }
+
+    let(:schema)  { nil }
+    let(:name)    { :dummy }
+    let(:dataset) { :dummy_dataset }
+    let(:proxy) { double('Proxy') }
+    let(:fetch_schema) { double('Schema') }
+
+    shared_examples_for 'fetch table from bigquery' do
+      it 'should get expect schema' do
+        expect(proxy).to receive(:fetch_schema_from_bigquery).with(dataset, expect_table).and_return(fetch_schema)
+        expect(proxy).to receive(:register).with(name, fetch_schema)
+        subject
+      end
+    end
+
+    context 'when not specify table name' do
+      let(:table) { nil }
+      let(:expect_table) { name }
+
+      it_behaves_like 'fetch table from bigquery'
+    end
+
+    context 'when specify table name' do
+      let(:table) { :dummy_table }
+      let(:expect_table) { table }
+
+      it_behaves_like 'fetch table from bigquery'
+    end
+
+    context 'when specify schema' do
+      let(:table) { nil }
+      let(:schema) { [{ name: 'name', type: 'STRING' }, { name: 'age', type: 'INTEGER' }] }
+
+      it 'should register to BqFactory' do
+        expect(described_class).not_to receive(:fetch_schema_from_bigquery)
+        expect(proxy).to receive(:register).with(name, schema)
+        subject
+      end
+    end
   end
 
   describe 'integration test', :vcr do
@@ -106,9 +137,7 @@ describe BqFactory do
       BqFactory.create_table!(existing_dataset, table_name, schema)
       BqFactory.create_dataset!(view_dataset)
 
-      BqFactory.define do
-        factory "test_table", dataset: "existing_dataset"
-      end
+      BqFactory.register "test_table", dataset: "existing_dataset"
     end
 
     describe '.create_view' do

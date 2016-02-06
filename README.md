@@ -45,9 +45,7 @@ This pattern is fetch schema from hash(not call api access).
 First, setup factories in fixture file:
 
 ```ruby
-BqFactory.define do
-  factory :user, schema: [{ name: 'name', type: 'INTEGER' }, { name: 'age', type: 'INTEGER' }]
-end
+BqFactory.register :user, schema: [{ name: 'name', type: 'INTEGER' }, { name: 'age', type: 'INTEGER' }]
 ```
 
 And, In your test code:
@@ -77,15 +75,13 @@ This pattern is fetch schema from bigquery(call api access).
 First, setup factories in fixture file:
 
 ```ruby
-BqFactory.define do
-  # Reference target of dataset and tables in options.
-  # Factory fetch schema from  bigquery
-  factory :user, dataset: 'my_dataset' # => reference my_dataset.user table
-  factory :user, dataset: 'my_dataset', table: 'my_table' # => reference my_dataset.my_table
-end
+# Reference target of dataset and tables in options.
+# Factory fetch schema from  bigquery
+BqFactory.register :user, dataset: 'my_dataset' # => reference my_dataset.user table
+BqFactory.register :user, dataset: 'my_dataset', table: 'my_table' # => reference my_dataset.my_table
 ```
 
-If define `factory :user, dataset: 'test_dataset'` and `user` table schema is this:
+If register `:user, dataset: 'test_dataset'` and `user` table schema is this:
 
 |column_name|type|
 |:----|:----|
