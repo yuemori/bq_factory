@@ -114,8 +114,9 @@ describe BqFactory do
   end
 
   describe 'integration test', :vcr do
-    let!(:existing_dataset) { "existing_dataset#{Time.now.to_i}" }
-    let!(:view_dataset) { "view_dataset#{Time.now.to_i}" }
+    let!(:timestamp) { DateTime.now.strftime('%Q') }
+    let!(:existing_dataset) { "existing_dataset#{timestamp}" }
+    let!(:view_dataset) { "view_dataset#{timestamp}" }
     let!(:table_name) { "test_table" }
     let!(:schema) { [column1, column2, column3, column4, column5] }
 
