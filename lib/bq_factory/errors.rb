@@ -1,3 +1,3 @@
 module BqFactory
-  class DuplicateDefinitionError < StandardError; end
+  class DuplicateDefinitionError < RuntimeError; end
 end
