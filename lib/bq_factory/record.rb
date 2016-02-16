@@ -1,4 +1,4 @@
-require 'hashie'
+require 'ostruct'
 
 module BqFactory
   class Record
@@ -10,7 +10,7 @@ module BqFactory
       raise ArgumentError.new, "Schema is not Array" unless schema.is_a? Array
 
       schema.each do |hash|
-        column = Hashie::Mash.new(hash)
+        column = OpenStruct.new(hash)
         items[column.name] = Attribute.new(column.name, column.type)
       end
 
