@@ -20,6 +20,6 @@ Shoulda::Matchers.configure do |config|
 end
 
 BqFactory.configure do |config|
-  config.project_id = 'bq-factory'
+  config.project_id = ENV['PROJECT_ID']
   config.keyfile_path = ENV['KEYFILE_PATH']
 end
