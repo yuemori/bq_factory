@@ -21,5 +21,5 @@ end
 
 BqFactory.configure do |config|
   config.project_id = 'bq-factory'
-  config.keyfile_path = File.expand_path '../keys/bq-factory.json', __FILE__
+  config.keyfile_path = ENV['KEYFILE_PATH']
 end
