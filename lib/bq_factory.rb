@@ -50,7 +50,7 @@ module BqFactory
     private
 
     def proxy
-      @facade ||= Proxy.new
+      @proxy ||= Proxy.new
     end
   end
 end
