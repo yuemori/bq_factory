@@ -47,6 +47,11 @@ module BqFactory
       proxy.register(name, Table.new(table_name, dataset, schema))
     end
 
+    def registered?(name)
+      name = name.to_sym
+      proxy.registered?(name)
+    end
+
     private
 
     def proxy

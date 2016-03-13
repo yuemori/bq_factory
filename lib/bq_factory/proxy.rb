@@ -3,7 +3,7 @@ module BqFactory
     delegate :fetch_schema, :create_dataset!, :delete_dataset!, :create_table!, :delete_table!, :query, to: :client
     alias :fetch_schema_from_bigquery :fetch_schema
 
-    delegate :register, :find, to: :schemas
+    delegate :register, :registered?, :find, to: :schemas
     alias :table_by_name :find
 
     delegate :project_id, :keyfile_path, to: :configuration

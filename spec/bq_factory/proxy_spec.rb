@@ -15,7 +15,7 @@ describe BqFactory::Proxy do
     end
 
     describe 'to schemas' do
-      %i(register find).each do |method_name|
+      %i(register registered? find).each do |method_name|
         it { is_expected.to delegate_method(method_name).to(:schemas) }
       end
     end
