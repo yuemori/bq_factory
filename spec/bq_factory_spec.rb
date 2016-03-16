@@ -95,6 +95,24 @@ describe BqFactory do
     end
   end
 
+  describe '.registered?' do
+    subject { described_class.registered?(name) }
+    let(:dataset) { :dummy_dataset }
+
+    context 'when registered' do
+      let(:name) { :registered_dummy }
+
+      before { described_class.register(name, dataset: dataset) }
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when not registered' do
+      let(:name) { :not_registered_dummy }
+
+      it { is_expected.to be_falsy }
+    end
+  end
+
   if ENV['PROJECT_ID'] && ENV['KEYFILE_PATH']
     describe 'integration test', :vcr do
       let!(:existing_dataset) { "existing_dataset" }
