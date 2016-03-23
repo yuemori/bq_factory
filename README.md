@@ -45,7 +45,7 @@ This pattern is fetch schema from hash(not call api access).
 First, setup factories in fixture file:
 
 ```ruby
-BqFactory.register :user, schema: [{ name: 'name', type: 'INTEGER' }, { name: 'age', type: 'INTEGER' }]
+BqFactory.register :user, dataset: :test_dataset, schema: [{ name: 'name', type: 'INTEGER' }, { name: 'age', type: 'INTEGER' }]
 ```
 
 And, In your test code:
