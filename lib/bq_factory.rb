@@ -23,9 +23,10 @@ module BqFactory
       configuration
     end
 
-    def create_view(dataset_name, factory_name, rows)
+    def create_view(dataset_name, factory_name, rows, view_name = nil)
+      view_name ||= factory_name
       query = build_query(factory_name, rows)
-      client.create_view(dataset_name, factory_name, query)
+      client.create_view(dataset_name, view_name, query)
     end
 
     def build_query(register_name, rows)

@@ -22,18 +22,33 @@ describe BqFactory do
   end
 
   describe '.create_view' do
-    subject { described_class.create_view(dataset_name, table_id, rows) }
+    subject { described_class.create_view(dataset_name, table_id, rows, view_name) }
     let(:dataset_name) { :dummy_dataset }
     let(:table_id) { :dummy_table }
     let(:rows)     { { name: 'foo' } }
     let(:client)   { double('Client') }
     let(:query)    { %{SELECT * FROM (SELECT "foo" AS name)} }
 
-    it 'should be delegated to client' do
-      expect(described_class).to receive(:build_query).with(table_id, rows).and_return(query)
-      expect(described_class).to receive(:client).and_return(client)
-      expect(client).to receive(:create_view).with(dataset_name, table_id, query)
-      subject
+    context 'when view_name is nil' do
+      let(:view_name) { nil }
+
+      it 'should be delegated to client with table_id' do
+        expect(described_class).to receive(:build_query).with(table_id, rows).and_return(query)
+        expect(described_class).to receive(:client).and_return(client)
+        expect(client).to receive(:create_view).with(dataset_name, table_id, query)
+        subject
+      end
+    end
+
+    context 'when view_name is given' do
+      let(:view_name) { 'dummy_view' }
+      
+      it 'should be delegated to client with given view_name' do
+        expect(described_class).to receive(:build_query).with(table_id, rows).and_return(query)
+        expect(described_class).to receive(:client).and_return(client)
+        expect(client).to receive(:create_view).with(dataset_name, view_name, query)
+        subject
+      end
     end
   end
 
